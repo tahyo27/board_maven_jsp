@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    @ResponseBody
+    @GetMapping({"/", "/index"})
     public String home() {
-        return "홈";
+        return "index";
     }
 }

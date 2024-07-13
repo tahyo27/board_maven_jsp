@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: myboard
+  datasource:
+    url: jdbc:mariadb://localhost:3306/animal
+    username: root
+    password: 12345
+    driver-class-name: org.mariadb.jdbc.Driver
+  mvc:
+    view:
+      prefix: /WEB-INF/view/
+      suffix: .jsp
+
+server:
+  port: 8074
+
+
+#MyBatis
+mybatis:
+  mapper-locations: classpath:/myboard/mybatis/*.xml
+  type-aliases-package: com.duck.myboard.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+  logging:
+    level:
+      org.apache.ibatis: DEBUG
