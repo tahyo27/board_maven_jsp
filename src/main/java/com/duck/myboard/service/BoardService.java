@@ -3,12 +3,13 @@ package com.duck.myboard.service;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.repository.BoardRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;

@@ -3,6 +3,7 @@ package com.duck.myboard.controller;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.service.BoardService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
