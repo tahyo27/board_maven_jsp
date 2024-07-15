@@ -10,4 +10,7 @@ public interface BoardMapper {
 
     int save(Board board);
     List<Board> findAll();
+    int update(Board board);
+
+    int deleteById(Long id);
 }

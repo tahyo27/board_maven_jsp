@@ -41,18 +41,67 @@ class BoardRepositoryTest {
     @Test
     @DisplayName("mapper 저장 테스트")
     void findAll() {
+        //given
+        Long boardId = testObj();
+
+        //when
+        List<Board> boards = boardMapper.findAll();
+
+        //then
+        assertThat(boards.get(0).getTitle()).isEqualTo("제목");
+        assertThat(boards.get(0).getContent()).isEqualTo("내용");
+        assertThat(boards.get(0).getAuthor()).isEqualTo("작성자");
+    }
+
+    @Test
+    @DisplayName("mapper update 테스트")
+    void update() {
+        //given
+        Long boardId = testObj();
+
+        Board updateBoard = Board.builder()
+                .id(boardId)
+                .title("제목변경")
+                .content("내용변경")
+                .build();
+        
+        int updateResult = boardMapper.update(updateBoard);
+
+        //when
+        List<Board> boards = boardMapper.findAll();
+
+        //then
+        assertThat(boards.get(0).getTitle()).isEqualTo("제목변경");
+        assertThat(boards.get(0).getContent()).isEqualTo("내용변경");
+
+    }
+
+    @Test
+    @DisplayName("mapper delete 테스트")
+    void deleteById() {
+        //given
+        Long boardId = testObj();
+
+        //when
+        List<Board> boards = boardMapper.findAll();
+        Assertions.assertEquals(boards.size(), 1);
+
+        int result = boardMapper.deleteById(boardId);
+
+        //then
+        Assertions.assertEquals(result, 1);
+
+    }
+
+    private Long testObj() {
         Board board = Board.builder()
                 .title("제목")
                 .content("내용")
                 .author("작성자")
                 .build();
-
         int result = boardMapper.save(board);
-        List<Board> boards = boardMapper.findAll();
 
-        assertThat(boards.get(0).getTitle()).isEqualTo("제목");
-        assertThat(boards.get(0).getContent()).isEqualTo("내용");
-        assertThat(boards.get(0).getAuthor()).isEqualTo("작성자");
+        return board.getId();
     }
 
 

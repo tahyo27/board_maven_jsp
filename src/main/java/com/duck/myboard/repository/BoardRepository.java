@@ -22,4 +22,12 @@ public class BoardRepository {
         return boardMapper.save(board);
     }
 
+    public int update(Board board) {
+        return boardMapper.update(board);
+    }
+
+    public int deleteById(Long id) {
+        return  boardMapper.deleteById(id);
+    }
+
 }

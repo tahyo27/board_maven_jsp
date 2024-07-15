@@ -20,4 +20,5 @@ public class BoardService {
     public int write(Board board) {
         return boardRepository.save(board);
     }
+
 }
