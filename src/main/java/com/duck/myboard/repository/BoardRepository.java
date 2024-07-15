@@ -18,4 +18,8 @@ public class BoardRepository {
         return boardMapper.findAll();
     }
 
+    public int save(Board board) {
+        return boardMapper.save(board);
+    }
+
 }

@@ -16,4 +16,8 @@ public class BoardService {
     public List<Board> getList() {
         return boardRepository.findAll();
     }
+
+    public int write(Board board) {
+        return boardRepository.save(board);
+    }
 }
