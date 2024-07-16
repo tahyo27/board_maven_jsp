@@ -31,4 +31,6 @@ public class BoardRepository {
         return  boardMapper.deleteById(id);
     }
 
+    public List<Board> getOffsetPaging() { return boardMapper.getOffsetPaging();}
+
 }

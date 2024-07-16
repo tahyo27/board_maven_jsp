@@ -14,4 +14,6 @@ public interface BoardMapper {
     int update(Board board);
 
     int deleteById(Long id);
+
+    List<Board> getOffsetPaging();
 }

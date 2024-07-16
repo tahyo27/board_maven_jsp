@@ -16,13 +16,15 @@
           <div>작성일<div>
           <div>조회수<div>
     <div>
+    <c:forEach var="board" items="${boardList}">
     <div>
-          <div>1<div>
-          <div>테스트글<div>
-          <div>테스트작성자<div>
-          <div>테스트일<div>
-          <div>테스트조회<div>
+          <div>${board.id}<div>
+          <div>${board.title}<div>
+          <div>${board.author}<div>
+          <div>${board.createAt}<div>
+          <div>${board.count}<div>
     <div>
+    </c:forEach>
     </main>
 </body>
 </html>

@@ -19,6 +19,10 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
+    public List<Board> getPagingList() {
+        return boardRepository.getOffsetPaging();
+    }
+
     public int write(BoardCreate boardCreate) {
         
         Board board = boardCreate.convert(boardCreate);

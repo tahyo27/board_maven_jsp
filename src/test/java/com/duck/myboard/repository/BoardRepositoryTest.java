@@ -4,6 +4,7 @@ import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.request.BoardCreate;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.interning.qual.InternedDistinct;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,6 +98,22 @@ class BoardRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("mapper paging 테스트")
+    void mapper_get_offset_paging_test() {
+        //given
+        pagingObj();
+
+        //when
+        List<Board> boardList = boardMapper.getOffsetPaging();
+
+        //then
+        Assertions.assertEquals(10, boardList.size());
+        Assertions.assertEquals("제목100", boardList.get(0).getTitle());
+        Assertions.assertEquals("내용100", boardList.get(0).getContent());
+
+    }
+
     private Long testObj() {
         Board board = Board.builder()
                 .title("제목")
@@ -106,6 +123,17 @@ class BoardRepositoryTest {
         int result = boardMapper.save(board);
 
         return board.getId();
+    }
+
+    private void pagingObj() {
+        for(int i = 1; i <= 100; i++) {
+            Board board = Board.builder()
+                    .title("제목" + i)
+                    .content("내용" + i)
+                    .author("작성자" + i)
+                    .build();
+            boardMapper.save(board);
+        }
     }
 
 
