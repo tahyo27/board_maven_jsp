@@ -2,6 +2,8 @@ package com.duck.myboard.repository;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
+import com.duck.myboard.request.BoardCreate;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @MybatisTest
@@ -39,13 +42,14 @@ class BoardRepositoryTest {
     }
 
     @Test
-    @DisplayName("mapper 저장 테스트")
+    @DisplayName("mapper findAll 테스트")
     void findAll() {
         //given
         Long boardId = testObj();
 
         //when
         List<Board> boards = boardMapper.findAll();
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", boards);
 
         //then
         assertThat(boards.get(0).getTitle()).isEqualTo("제목");

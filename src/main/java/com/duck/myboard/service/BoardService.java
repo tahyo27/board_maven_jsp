@@ -2,6 +2,8 @@ package com.duck.myboard.service;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.repository.BoardRepository;
+import com.duck.myboard.request.BoardCreate;
+import com.duck.myboard.request.BoardEdit;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,22 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
-    public int write(Board board) {
+    public int write(BoardCreate boardCreate) {
+        
+        Board board = boardCreate.convert(boardCreate);
+
         return boardRepository.save(board);
+    }
+
+    public int edit(BoardEdit boardEdit) {
+
+        Board board = boardEdit.convert(boardEdit);
+
+        return boardRepository.update(board);
+    }
+
+    public int delete(Long boardId) {
+        return boardRepository.deleteById(boardId);
     }
 
 }

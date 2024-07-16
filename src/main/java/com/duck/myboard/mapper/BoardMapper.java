@@ -1,6 +1,7 @@
 package com.duck.myboard.mapper;
 
 import com.duck.myboard.domain.Board;
+import com.duck.myboard.request.BoardCreate;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
