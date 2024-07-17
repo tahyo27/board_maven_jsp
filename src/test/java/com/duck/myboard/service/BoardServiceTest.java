@@ -52,18 +52,15 @@ class BoardServiceTest {
         Assertions.assertEquals(result, 1);
     }
     @Test
-    @DisplayName("board service getList 테스트")
+    @DisplayName("board service getPagingList 테스트")
     void board_service_getList_test() {
-        //given
-        Long boardId = testObj();
-
 
         //when
-        List<Board> boards = boardService.getList();
+        List<Board> boards = boardService.getPagingList();
 
 
         //then
-        Assertions.assertEquals(boards.size(), 1);
+        Assertions.assertEquals(boards.size(), 10);
     }
 
     @Test
@@ -81,7 +78,7 @@ class BoardServiceTest {
         int updateResult = boardService.edit(boardEdit);
 
         //when
-        List<Board> boards = boardService.getList();
+        List<Board> boards = boardService.getPagingList();
 
         //then
         Assertions.assertEquals(boardEdit.getTitle(), boards.get(0).getTitle());
@@ -108,6 +105,7 @@ class BoardServiceTest {
                 .content("내용")
                 .author("작성자")
                 .build();
+
         int result = boardMapper.save(board);
 
         return board.getId();

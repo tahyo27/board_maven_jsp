@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,8 +31,7 @@ public class BoardController {
     @PostMapping("/boards")
     public String writeBoard(@ModelAttribute BoardCreate boardCreate) {
         int result = boardService.write(boardCreate);
-
-        return "";
+        return "redirect:/";
     }
 
     @PatchMapping("/boards")
@@ -43,6 +39,13 @@ public class BoardController {
         log.info(">>>>>>>>>>>>>>>>>>>>>> edit board = {}", boardEdit);
         int result = boardService.edit(boardEdit);
 
-        return "redirect:/index";
+        return "redirect:/";
+    }
+
+    @DeleteMapping("/boards/{boardId}")
+    public String deleteBoard(@PathVariable(value = "boardId") Long boardId) {
+        int result = boardService.delete(boardId);
+
+        return "redirect:/";
     }
 }
