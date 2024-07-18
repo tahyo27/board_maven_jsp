@@ -8,12 +8,13 @@ import java.lang.reflect.Field;
 @Component
 public class BlankValidation {
 
-    public boolean isValid(Object obj) {
+    public void isValid(Object obj, String... fieldNames) {
         if(obj == null) {
             throw new BlankException();
         }
         try {
-            for(Field field : obj.getClass().getDeclaredFields()) {
+            for(String fieldName : fieldNames) {
+                Field field = obj.getClass().getDeclaredField(fieldName);
                 field.setAccessible(true);
                 Object value = field.get(obj);
                 if(value == null || (value instanceof String && ((String) value).trim().isEmpty())) {
@@ -21,9 +22,10 @@ public class BlankValidation {
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("필드에 접근 실패", e);
+            throw new RuntimeException("해당 필드에 접근 실패", e);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("해당 필드를 찾을 수 없습니다", e);
         }
 
-        return true;
     }
 }

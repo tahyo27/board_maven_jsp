@@ -143,8 +143,8 @@ class BoardControllerTest {
     void controller_write_request_blank_exception_test() throws Exception {
         //given
         BoardRequest boardRequest = BoardRequest.builder()
-                .title("   ")
-                .content("테스트")
+                .title("제목")
+                .content("         ")
                 .author("작성자")
                 .build();
 
@@ -170,7 +170,6 @@ class BoardControllerTest {
         BoardRequest boardRequest = BoardRequest.builder()
                 .title("제목")
                 .content("    ")
-                .author("작성자")
                 .build();
 
         //expected
@@ -178,8 +177,7 @@ class BoardControllerTest {
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content(buildUrlEncodedFormEntity(
                                 "title", boardRequest.getTitle(),
-                                "content", boardRequest.getContent(),
-                                "author", boardRequest.getAuthor()
+                                "content", boardRequest.getContent()
                         ))
                 )
                 .andExpect(status().isFound())

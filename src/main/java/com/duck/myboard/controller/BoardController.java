@@ -30,14 +30,14 @@ public class BoardController {
 
     @PostMapping("/boards")
     public String writeBoard(@ModelAttribute BoardRequest boardRequest) {
-        blankValidation.isValid(boardRequest);
+        blankValidation.isValid(boardRequest, "title", "content", "author");
         int result = boardService.write(boardRequest);
         return "redirect:/";
     }
 
     @PatchMapping("/boards/{boardId}")
     public String editBoard(@PathVariable(value = "boardId") Long boardId, @ModelAttribute BoardRequest boardRequest) {
-        blankValidation.isValid(boardRequest);
+        blankValidation.isValid(boardRequest, "title", "content");
         log.info(">>>>>>>>>>>>>>>>>>>>>> edit board = {}", boardRequest);
         int result = boardService.edit(boardId, boardRequest);
 
