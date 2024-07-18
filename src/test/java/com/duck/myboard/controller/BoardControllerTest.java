@@ -91,18 +91,18 @@ class BoardControllerTest {
         //given
         Long boardId = testObj();
         BoardRequest boardEdit = BoardRequest.builder()
-                .id(boardId)
                 .title("변경된제목입니다")
                 .content("변경된내용입니다")
+                .author("더미값")
                 .build();
 
         //when
-        mockMvc.perform(patch("/boards")
+        mockMvc.perform(patch("/boards/{boardId}", boardId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content(buildUrlEncodedFormEntity(
-                                "id", String.valueOf(boardId),
                                 "title", boardEdit.getTitle(),
-                                "content", boardEdit.getContent()
+                                "content", boardEdit.getContent(),
+                                "author", boardEdit.getAuthor()
                         ))
                 )
                 .andExpect(status().isFound())
@@ -137,6 +137,57 @@ class BoardControllerTest {
         Assertions.assertNotEquals(before, after);
 
     }
+
+    @Test
+    @DisplayName("controller 등록 공백 실패 테스트 및 예외처리")
+    void controller_write_request_blank_exception_test() throws Exception {
+        //given
+        BoardRequest boardRequest = BoardRequest.builder()
+                .title("   ")
+                .content("테스트")
+                .author("작성자")
+                .build();
+
+        //expected
+        mockMvc.perform(post("/boards")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(buildUrlEncodedFormEntity(
+                                "title", boardRequest.getTitle(),
+                                "content", boardRequest.getContent(),
+                                "author", boardRequest.getAuthor()
+                        ))
+                )
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("error"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("controller 수정 공백 실패 테스트 및 예외처리")
+    void controller_eidt_request_blank_exception_test() throws Exception {
+        //given
+        BoardRequest boardRequest = BoardRequest.builder()
+                .title("제목")
+                .content("    ")
+                .author("작성자")
+                .build();
+
+        //expected
+        mockMvc.perform(patch("/boards/{boardId}", 1)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(buildUrlEncodedFormEntity(
+                                "title", boardRequest.getTitle(),
+                                "content", boardRequest.getContent(),
+                                "author", boardRequest.getAuthor()
+                        ))
+                )
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("error"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+
 
 
 

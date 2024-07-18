@@ -69,12 +69,11 @@ class BoardServiceTest {
         Long boardId = testObj();
 
         BoardRequest boardEdit = BoardRequest.builder()
-                .id(boardId)
                 .title("변경제목")
                 .content("변경내용")
                 .build();
 
-        int updateResult = boardService.edit(boardEdit);
+        int updateResult = boardService.edit(boardId, boardEdit);
 
         //when
         List<Board> boards = boardService.getPagingList();

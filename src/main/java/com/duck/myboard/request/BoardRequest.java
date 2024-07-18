@@ -11,18 +11,17 @@ import lombok.ToString;
 @ToString
 public class BoardRequest {
 
-    private Long id;
     private String title;
     private String content;
     private String author;
 
     @Builder
-    public BoardRequest(Long id, String title, String content, String author) {
-        this.id = id;
+    public BoardRequest(String title, String content, String author) {
         this.title = title;
         this.content = content;
         this.author = author;
     }
+
     public static Board createConvert (BoardRequest boardRequest) {
         return Board.builder()
                 .title(boardRequest.getTitle())
@@ -31,9 +30,9 @@ public class BoardRequest {
                 .build();
     }
 
-    public static Board editConvert (BoardRequest boardRequest) {
+    public static Board editConvert (Long boardId, BoardRequest boardRequest) {
         return Board.builder()
-                .id(boardRequest.getId())
+                .id(boardId)
                 .title(boardRequest.getTitle())
                 .content(boardRequest.getContent())
                 .build();

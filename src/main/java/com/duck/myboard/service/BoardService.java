@@ -28,9 +28,9 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public int edit(BoardRequest boardRequest) {
+    public int edit(Long boardId, BoardRequest boardRequest) {
 
-        Board board = BoardRequest.editConvert(boardRequest);
+        Board board = BoardRequest.editConvert(boardId, boardRequest);
 
         return boardRepository.update(board);
     }
