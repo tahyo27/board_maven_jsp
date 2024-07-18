@@ -2,9 +2,7 @@ package com.duck.myboard.service;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.repository.BoardRepository;
-import com.duck.myboard.request.BoardCreate;
-import com.duck.myboard.request.BoardEdit;
-import lombok.AllArgsConstructor;
+import com.duck.myboard.request.BoardRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +21,16 @@ public class BoardService {
         return boardRepository.getOffsetPaging();
     }
 
-    public int write(BoardCreate boardCreate) {
+    public int write(BoardRequest boardRequest) {
         
-        Board board = boardCreate.convert(boardCreate);
+        Board board = BoardRequest.createConvert(boardRequest);
 
         return boardRepository.save(board);
     }
 
-    public int edit(BoardEdit boardEdit) {
+    public int edit(BoardRequest boardRequest) {
 
-        Board board = boardEdit.convert(boardEdit);
+        Board board = BoardRequest.editConvert(boardRequest);
 
         return boardRepository.update(board);
     }

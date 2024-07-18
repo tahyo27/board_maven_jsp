@@ -1,13 +1,10 @@
 package com.duck.myboard.controller;
 
 import com.duck.myboard.domain.Board;
-import com.duck.myboard.request.BoardCreate;
-import com.duck.myboard.request.BoardEdit;
+import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.service.BoardService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +26,15 @@ public class BoardController {
     }
 
     @PostMapping("/boards")
-    public String writeBoard(@ModelAttribute BoardCreate boardCreate) {
-        int result = boardService.write(boardCreate);
+    public String writeBoard(@ModelAttribute BoardRequest boardRequest) {
+        int result = boardService.write(boardRequest);
         return "redirect:/";
     }
 
     @PatchMapping("/boards")
-    public String editBoard(@ModelAttribute BoardEdit boardEdit) {
-        log.info(">>>>>>>>>>>>>>>>>>>>>> edit board = {}", boardEdit);
-        int result = boardService.edit(boardEdit);
+    public String editBoard(@ModelAttribute BoardRequest boardRequest) {
+        log.info(">>>>>>>>>>>>>>>>>>>>>> edit board = {}", boardRequest);
+        int result = boardService.edit(boardRequest);
 
         return "redirect:/";
     }

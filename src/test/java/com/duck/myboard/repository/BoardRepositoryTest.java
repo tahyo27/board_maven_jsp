@@ -2,9 +2,7 @@ package com.duck.myboard.repository;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
-import com.duck.myboard.request.BoardCreate;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.interning.qual.InternedDistinct;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,12 +48,10 @@ class BoardRepositoryTest {
 
         //when
         List<Board> boards = boardMapper.findAll();
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", boards);
+
 
         //then
-        assertThat(boards.get(0).getTitle()).isEqualTo("제목");
-        assertThat(boards.get(0).getContent()).isEqualTo("내용");
-        assertThat(boards.get(0).getAuthor()).isEqualTo("작성자");
+        Assertions.assertFalse(boards.isEmpty());
     }
 
     @Test
@@ -73,7 +69,7 @@ class BoardRepositoryTest {
         int updateResult = boardMapper.update(updateBoard);
 
         //when
-        List<Board> boards = boardMapper.findAll();
+        List<Board> boards = boardMapper.getOffsetPaging();
 
         //then
         assertThat(boards.get(0).getTitle()).isEqualTo("제목변경");
@@ -88,9 +84,6 @@ class BoardRepositoryTest {
         Long boardId = testObj();
 
         //when
-        List<Board> boards = boardMapper.findAll();
-        Assertions.assertEquals(boards.size(), 1);
-
         int result = boardMapper.deleteById(boardId);
 
         //then

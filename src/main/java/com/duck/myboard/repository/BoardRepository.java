@@ -3,7 +3,6 @@ package com.duck.myboard.repository;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
-import com.duck.myboard.request.BoardCreate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

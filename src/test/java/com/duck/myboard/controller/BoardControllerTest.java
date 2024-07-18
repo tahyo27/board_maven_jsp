@@ -2,13 +2,11 @@ package com.duck.myboard.controller;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
-import com.duck.myboard.request.BoardCreate;
-import com.duck.myboard.request.BoardEdit;
+import com.duck.myboard.request.BoardRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.boot.test.autoconfigure.AutoConfigureMybatis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -58,7 +56,7 @@ class BoardControllerTest {
     void controller_write_test() throws Exception {
 
         //given
-        BoardCreate boardCreate = BoardCreate.builder()
+        BoardRequest boardCreate = BoardRequest.builder()
                 .title("새로운제목입니다2")
                 .content("새로운내용입니다2")
                 .author("새로운작성자입니다2")
@@ -92,7 +90,7 @@ class BoardControllerTest {
 
         //given
         Long boardId = testObj();
-        BoardEdit boardEdit = BoardEdit.builder()
+        BoardRequest boardEdit = BoardRequest.builder()
                 .id(boardId)
                 .title("변경된제목입니다")
                 .content("변경된내용입니다")

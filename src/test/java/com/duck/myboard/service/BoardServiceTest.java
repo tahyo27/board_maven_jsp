@@ -3,8 +3,7 @@ package com.duck.myboard.service;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.repository.BoardRepository;
-import com.duck.myboard.request.BoardCreate;
-import com.duck.myboard.request.BoardEdit;
+import com.duck.myboard.request.BoardRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +38,7 @@ class BoardServiceTest {
     @DisplayName("board service 저장 테스트")
     void board_service_save_test() {
         //given
-        BoardCreate board = BoardCreate.builder()
+        BoardRequest board = BoardRequest.builder()
                 .title("제목")
                 .content("내용")
                 .author("작성자")
@@ -69,7 +68,7 @@ class BoardServiceTest {
         //given
         Long boardId = testObj();
 
-        BoardEdit boardEdit = BoardEdit.builder()
+        BoardRequest boardEdit = BoardRequest.builder()
                 .id(boardId)
                 .title("변경제목")
                 .content("변경내용")
