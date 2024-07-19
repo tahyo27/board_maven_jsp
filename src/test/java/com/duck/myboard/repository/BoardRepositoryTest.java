@@ -107,6 +107,21 @@ class BoardRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("mapper findById 테스트")
+    void mapper_findById_test() {
+        //given;
+        Long boardId = testObj();
+
+        //when
+        Board board = boardMapper.findById(boardId);
+
+        //then
+        Assertions.assertEquals("제목", board.getTitle());
+        Assertions.assertEquals("내용", board.getContent());
+        Assertions.assertEquals("작성자", board.getAuthor());
+    }
+
     private Long testObj() {
         Board board = Board.builder()
                 .title("제목")

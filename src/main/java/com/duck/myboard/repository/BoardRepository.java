@@ -3,6 +3,7 @@ package com.duck.myboard.repository;
 
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
+import com.duck.myboard.response.BoardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -32,4 +33,7 @@ public class BoardRepository {
 
     public List<Board> getOffsetPaging() { return boardMapper.getOffsetPaging();}
 
+    public Board findById(Long boardId) {
+        return boardMapper.findById(boardId);
+    }
 }

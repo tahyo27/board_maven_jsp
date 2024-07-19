@@ -18,6 +18,10 @@
 
     </select>
 
+    <select id="findById" resultType="com.duck.myboard.domain.Board">
+        SELECT * FROM board WHERE id = #{id}
+    </select>
+
     <update id="update">
         UPDATE board
         SET title = #{title},

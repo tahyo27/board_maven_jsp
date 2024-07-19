@@ -1,6 +1,7 @@
 package com.duck.myboard.mapper;
 
 import com.duck.myboard.domain.Board;
+import com.duck.myboard.response.BoardResponse;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface BoardMapper {
     int deleteById(Long id);
 
     List<Board> getOffsetPaging();
+
+    Board findById(Long boardId);
 }

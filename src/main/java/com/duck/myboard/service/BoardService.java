@@ -3,6 +3,7 @@ package com.duck.myboard.service;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.repository.BoardRepository;
 import com.duck.myboard.request.BoardRequest;
+import com.duck.myboard.response.BoardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,4 +40,8 @@ public class BoardService {
         return boardRepository.deleteById(boardId);
     }
 
+    public BoardResponse get(Long boardId) {
+        Board board = boardRepository.findById(boardId);
+        return BoardResponse.convert(board);
+    }
 }

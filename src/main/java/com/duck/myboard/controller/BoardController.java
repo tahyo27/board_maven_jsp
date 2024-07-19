@@ -3,6 +3,7 @@ package com.duck.myboard.controller;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.exception.BlankException;
 import com.duck.myboard.request.BoardRequest;
+import com.duck.myboard.response.BoardResponse;
 import com.duck.myboard.service.BoardService;
 import com.duck.myboard.validation.BlankValidation;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,12 @@ public class BoardController {
         int result = boardService.delete(boardId);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/boards/{boardId}")
+    public String selectBoard(@PathVariable(value = "boardId") Long boardId, Model model) {
+        BoardResponse boardResponse = boardService.get(boardId);
+        model.addAttribute("board", boardResponse);
+        return "select";
     }
 }

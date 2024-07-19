@@ -185,6 +185,22 @@ class BoardControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    @Transactional
+    @DisplayName("controller board get 테스트")
+    void controller_board_get_test() throws Exception {
+        //given
+        Long boardId = testObj();
+
+
+        //expected
+        mockMvc.perform(get("/boards/{boardId}", boardId))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("board"))
+                .andExpect(view().name("select"))
+                .andDo(MockMvcResultHandlers.print());
+
+    }
 
 
 

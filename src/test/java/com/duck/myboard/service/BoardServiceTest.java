@@ -4,6 +4,7 @@ import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.repository.BoardRepository;
 import com.duck.myboard.request.BoardRequest;
+import com.duck.myboard.response.BoardResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -94,6 +95,22 @@ class BoardServiceTest {
 
         //then
         Assertions.assertEquals(1, deleteResult);
+
+    }
+
+    @Test
+    @DisplayName("board service findById 테스트")
+    void board_service_findById_test() {
+        //given
+        Long boardId = testObj();
+
+        //when
+        BoardResponse boardResponse = boardService.get(boardId);
+
+        //then
+        Assertions.assertEquals("제목", boardResponse.getTitle());
+        Assertions.assertEquals("내용", boardResponse.getContent());
+        Assertions.assertEquals("작성자", boardResponse.getAuthor());
 
     }
 
