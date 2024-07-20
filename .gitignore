@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 스토리지 파일을 무시합니다.
+**/src/main/resources/gcs/imgstorage.json

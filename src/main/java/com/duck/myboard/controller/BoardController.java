@@ -3,15 +3,21 @@ package com.duck.myboard.controller;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.exception.BlankException;
 import com.duck.myboard.request.BoardRequest;
+import com.duck.myboard.request.ImgRequestTest;
 import com.duck.myboard.response.BoardResponse;
 import com.duck.myboard.service.BoardService;
 import com.duck.myboard.validation.BlankValidation;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -21,6 +27,10 @@ public class BoardController {
 
     private final BoardService boardService;
     private final BlankValidation blankValidation;
+    private final Storage storage;
+
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @GetMapping("/boards")
     public String getListBoard(Model model) {
@@ -57,5 +67,28 @@ public class BoardController {
         BoardResponse boardResponse = boardService.get(boardId);
         model.addAttribute("board", boardResponse);
         return "select";
+    }
+
+    @GetMapping("/imgtest")
+    public String imgtest() {
+
+        return "imgtest";
+    }
+
+    @PostMapping("/imgtest")
+    public String uploadtest(@ModelAttribute ImgRequestTest imgRequestTest) throws IOException {
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>> {}", imgRequestTest.getImage().getName());
+        String ext = imgRequestTest.getImage().getContentType();
+        String imgName = imgRequestTest.getImage().getOriginalFilename();
+
+        // Google Cloud Storage에 이미지 업로드
+        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, imgName)
+                .setContentType(ext)
+                .build();
+        log.info("blobInfo: {}", blobInfo);
+        Blob blob = storage.create(blobInfo, imgRequestTest.getImage().getBytes());
+        log.info("blob: {}", blob);
+
+        return "";
     }
 }

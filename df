@@ -1,0 +1,95 @@
+[33mcommit 2bd5fa48ee841cc03a9cf1c3ca957c3c482c098b[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Fri Jul 19 16:32:28 2024 +0900
+
+    board findById 추가 및 테스트
+
+[33mcommit 72e058b795347613f68dc4a99f84ed07aa923feb[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Thu Jul 18 21:11:45 2024 +0900
+
+    검증 리팩토링 및 테스트
+
+[33mcommit 4a60af5263cf235f8890ff896909b17d3495ecc8[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Thu Jul 18 17:38:50 2024 +0900
+
+    공백 확인 추가, 예외처리 추가 및 테스트
+
+[33mcommit db9236958751a060f3097d3694ca27dec25eb973[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Thu Jul 18 16:16:16 2024 +0900
+
+    board request 변경
+
+[33mcommit 20f6b34ad6c6ef6bfc9b773a9e57e1eb508fcd15[m
+Author: tahyo27 <57753457+tahyo27@users.noreply.github.com>
+Date:   Thu Jul 18 15:59:41 2024 +0900
+
+    Update README.md
+
+[33mcommit c15e078d174a7f16de4244d43adeb082b4243a90[m
+Author: tahyo27 <57753457+tahyo27@users.noreply.github.com>
+Date:   Thu Jul 18 15:59:32 2024 +0900
+
+    Update README.md
+
+[33mcommit 91ca69b56b0fe97813e11f4f4f676a41cae63e26[m
+Author: tahyo27 <57753457+tahyo27@users.noreply.github.com>
+Date:   Thu Jul 18 15:59:04 2024 +0900
+
+    Create README.md
+
+[33mcommit 41d23227394d9a397d89e058ab70405ebd030378[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Wed Jul 17 21:55:31 2024 +0900
+
+    board 컨트롤러 수정 및 테스트 추가
+
+[33mcommit 7123ea483700e4d6054f6400feb822b1ae07d8ef[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Tue Jul 16 23:09:08 2024 +0900
+
+    페이징 기초처리 및 매퍼 테스트
+
+[33mcommit bed433e777de19490a4ebe571b6cd92ba0c965f6[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Tue Jul 16 18:44:17 2024 +0900
+
+    board 생성날짜 조회 추가 및 service 테스트 추가와 리팩토링
+
+[33mcommit 1dfcc6d904d5609434a35547d5d0ced22cc028a1[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Tue Jul 16 00:12:30 2024 +0900
+
+    board mapper UD 추가 및 테스트 추가
+
+[33mcommit 113136947a777ed88299aed6c2bc3d656e92edd8[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Mon Jul 15 22:20:38 2024 +0900
+
+    board service 저장 추가 및 테스트 추가
+
+[33mcommit 755c9314852beb0d96ada8155749fb80ca9940da[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Sun Jul 14 22:15:19 2024 +0900
+
+    user 추가 및 mapper 테스트
+
+[33mcommit 5153e9899d46d4fd324931b3e1b30083fb66fcd8[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Sat Jul 13 23:36:11 2024 +0900
+
+    테스트 환경 조성 및 mapper 테스트
+
+[33mcommit 28fcbdedd5ce7a767ee53391b7692cb05c52d10d[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Sat Jul 13 21:47:28 2024 +0900
+
+    마이바티스 설정 및 테스트
+
+[33mcommit c511d4164ec5440e36cfec67fb53184da61d0861[m
+Author: tahyo27 <tahyo27@gmail.com>
+Date:   Tue Jul 2 23:19:11 2024 +0900
+
+    init

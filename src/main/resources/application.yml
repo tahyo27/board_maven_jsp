@@ -11,6 +11,14 @@ spring:
       prefix: /WEB-INF/view/
       suffix: .jsp
 
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          location: classpath:gcs/imgstorage.json
+        project-id: imgtest-429913
+        bucket: imgtest_bucket
+
 server:
   port: 8074
 
