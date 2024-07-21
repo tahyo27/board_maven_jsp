@@ -1,4 +1,4 @@
-package com.duck.myboard.common;
+package com.duck.myboard.config;
 
 
 import com.google.auth.oauth2.GoogleCredentials;

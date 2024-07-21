@@ -72,7 +72,7 @@ public class BoardController {
     @GetMapping("/imgtest")
     public String imgtest() {
 
-        return "imgtest";
+        return "insert";
     }
 
     @PostMapping("/imgtest")

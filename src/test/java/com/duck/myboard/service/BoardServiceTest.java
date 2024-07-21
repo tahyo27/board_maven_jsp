@@ -1,5 +1,6 @@
 package com.duck.myboard.service;
 
+import com.duck.myboard.common.GoogleImgUploadUtil;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.repository.BoardRepository;
@@ -30,9 +31,12 @@ class BoardServiceTest {
 
     private BoardService boardService;
 
+    private GoogleImgUploadUtil googleImgUploadUtil;
+
     @BeforeEach
     void init() {
-        boardService = new BoardService(new BoardRepository(boardMapper));
+        boardService = new BoardService(new BoardRepository(boardMapper), googleImgUploadUtil); //그냥 넣어논것 테스트 마이바티스 버리고
+        // SpringBootTest로 바꿀지 결정
     }
 
     @Test
