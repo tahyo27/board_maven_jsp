@@ -5,26 +5,28 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@ToString
+
 @Getter
+@ToString
 public class Board {
     private Long id;
     private String title;
     private String content;
     private String author;
-    private final long count;
-    private String imageName;
+    private long count;
     private final LocalDateTime createAt;
+    private List<Image> images;
 
     @Builder
-    public Board(Long id, String title, String content, String author, String imageName) {
+    public Board(Long id, String title, String content, String author, List<Image> imagesList) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
         this.count = 0L;
         this.createAt = LocalDateTime.now();
-        this.imageName = imageName;
+        this.images = imagesList;
     }
 }

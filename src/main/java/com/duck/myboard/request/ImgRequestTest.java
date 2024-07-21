@@ -8,13 +8,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
+@Setter
 @ToString
 public class ImgRequestTest {
 
-    private MultipartFile image;
+    private MultipartFile[] images;
 
     @Builder
-    public ImgRequestTest(MultipartFile image) {
-        this.image = image;
+    public ImgRequestTest(MultipartFile[] image) {
+        this.images = images;
     }
 }

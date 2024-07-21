@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.myboard.mapper.ImageMapper">
+    <insert id="save" useGeneratedKeys="true">
+        INSERT INTO images (board_id, origin_name, unique_name, image_path)
+        VALUES (#{boardId}, #{originName}, #{uniqueName}, #{imagePath})
+    </insert>
+
+    <insert id="saveAll" useGeneratedKeys="true" parameterType="java.util.List">
+        INSERT INTO images (board_id, origin_name, unique_name, image_path)
+        VALUES
+        <foreach collection="list" item="image" separator=",">
+            (#{image.boardId}, #{image.originName}, #{image.uniqueName}, #{image.imagePath})
+        </foreach>
+    </insert>
+</mapper>

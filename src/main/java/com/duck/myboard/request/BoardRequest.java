@@ -8,28 +8,28 @@ import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
+@Setter
 @ToString
 public class BoardRequest {
 
     private String title;
     private String content;
     private String author;
-    private MultipartFile image;
+    private MultipartFile[] images;
 
     @Builder
-    public BoardRequest(String title, String content, String author, MultipartFile image) {
+    public BoardRequest(String title, String content, String author, MultipartFile[] image) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.image = image;
+        this.images = image;
     }
 
-    public static Board createConvert (BoardRequest boardRequest, String imageName) {
+    public static Board createConvert (BoardRequest boardRequest) {
         return Board.builder()
                 .title(boardRequest.getTitle())
                 .content(boardRequest.getContent())
                 .author(boardRequest.getAuthor())
-                .imageName(imageName)
                 .build();
     }
 

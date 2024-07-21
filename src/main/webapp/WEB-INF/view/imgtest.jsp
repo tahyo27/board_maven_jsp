@@ -12,7 +12,7 @@
           <h1>Upload an Image</h1>
           <form action="/imgtest" method="post" enctype="multipart/form-data">
              <label for="file">Choose an image to upload:</label>
-             <input type="file" id="file" name="image" accept="image/*" required>
+             <input type="file" id="file" name="images" accept="image/*" multiple>
              <br><br>
              <button type="submit">Upload Image</button>
           </form>

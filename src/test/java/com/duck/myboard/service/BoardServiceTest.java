@@ -35,7 +35,7 @@ class BoardServiceTest {
 
     @BeforeEach
     void init() {
-        boardService = new BoardService(new BoardRepository(boardMapper), googleImgUploadUtil); //그냥 넣어논것 테스트 마이바티스 버리고
+ //       boardService = new BoardService(new BoardRepository(boardMapper), googleImgUploadUtil); //그냥 넣어논것 테스트 마이바티스 버리고
         // SpringBootTest로 바꿀지 결정
     }
 

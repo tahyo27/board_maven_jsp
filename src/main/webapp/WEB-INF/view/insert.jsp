@@ -24,7 +24,7 @@
               <br><br>
 
               <label for="file">Choose an image to upload:</label>
-              <input type="file" id="file" name="image" accept="image/*" required>
+              <input type="file" id="file" name="images" accept="image/*" multiple>
               <br><br>
 
               <button type="submit">Upload Image</button>

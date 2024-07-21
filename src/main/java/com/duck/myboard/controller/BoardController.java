@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +28,6 @@ public class BoardController {
 
     private final BoardService boardService;
     private final BlankValidation blankValidation;
-    private final Storage storage;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -72,22 +72,15 @@ public class BoardController {
     @GetMapping("/imgtest")
     public String imgtest() {
 
-        return "insert";
+        return "imgtest";
     }
 
     @PostMapping("/imgtest")
     public String uploadtest(@ModelAttribute ImgRequestTest imgRequestTest) throws IOException {
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>> {}", imgRequestTest.getImage().getName());
-        String ext = imgRequestTest.getImage().getContentType();
-        String imgName = imgRequestTest.getImage().getOriginalFilename();
 
-        // Google Cloud Storage에 이미지 업로드
-        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, imgName)
-                .setContentType(ext)
-                .build();
-        log.info("blobInfo: {}", blobInfo);
-        Blob blob = storage.create(blobInfo, imgRequestTest.getImage().getBytes());
-        log.info("blob: {}", blob);
+        for(MultipartFile file : imgRequestTest.getImages()) {
+            log.info(">>>>>>>>>>>>>>>>>>>>>>>>> {}", file.getOriginalFilename());
+        }
 
         return "";
     }
