@@ -42,7 +42,7 @@ public class BoardController {
     @PostMapping("/boards")
     public String writeBoard(@ModelAttribute BoardRequest boardRequest) {
         blankValidation.isValid(boardRequest, "title", "content", "author");
-        int result = boardService.write(boardRequest);
+        Long result = boardService.write(boardRequest);
         return "redirect:/";
     }
 

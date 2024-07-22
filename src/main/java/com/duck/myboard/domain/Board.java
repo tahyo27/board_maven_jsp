@@ -20,13 +20,12 @@ public class Board {
     private List<Image> images;
 
     @Builder
-    public Board(Long id, String title, String content, String author, List<Image> imagesList) {
+    public Board(Long id, String title, String content, String author) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
         this.count = 0L;
         this.createAt = LocalDateTime.now();
-        this.images = imagesList;
     }
 }

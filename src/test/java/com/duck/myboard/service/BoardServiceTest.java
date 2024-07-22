@@ -2,8 +2,10 @@ package com.duck.myboard.service;
 
 import com.duck.myboard.common.GoogleImgUploadUtil;
 import com.duck.myboard.domain.Board;
+import com.duck.myboard.domain.Image;
 import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.repository.BoardRepository;
+import com.duck.myboard.repository.ImagesRepository;
 import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.response.BoardResponse;
 import org.junit.jupiter.api.Assertions;
@@ -14,30 +16,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 @ActiveProfiles("test")
-@MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BoardServiceTest {
-
     @Autowired
-    private BoardMapper boardMapper;
-
     private BoardService boardService;
 
+    @Autowired
     private GoogleImgUploadUtil googleImgUploadUtil;
 
-    @BeforeEach
-    void init() {
- //       boardService = new BoardService(new BoardRepository(boardMapper), googleImgUploadUtil); //그냥 넣어논것 테스트 마이바티스 버리고
-        // SpringBootTest로 바꿀지 결정
-    }
+    @Autowired
+    private ImagesRepository imagesRepository;
 
     @Test
     @DisplayName("board service 저장 테스트")
@@ -50,10 +49,10 @@ class BoardServiceTest {
                 .build();
 
         //when
-        int result = boardService.write(board);
+        Long result = boardService.write(board);
 
         //then
-        Assertions.assertEquals(result, 1);
+        Assertions.assertTrue(result > 0);
     }
     @Test
     @DisplayName("board service getPagingList 테스트")
@@ -68,6 +67,7 @@ class BoardServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("board service edit 테스트")
     void board_service_edit_test() {
         //given
@@ -89,6 +89,7 @@ class BoardServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("board service delete 테스트")
     void board_service_delete_test() {
         //given
@@ -103,6 +104,7 @@ class BoardServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("board service findById 테스트")
     void board_service_findById_test() {
         //given
@@ -117,17 +119,40 @@ class BoardServiceTest {
         Assertions.assertEquals("작성자", boardResponse.getAuthor());
 
     }
+    @Test
+    @Transactional
+    @DisplayName("board service 이미지포함 저장 테스트")
+    void board_service_img_save_test() {
+        //given
+        Long boardId = testObj();
+
+        List<Image> imageList = IntStream.range(0, 5).mapToObj(
+                i -> Image.builder()
+                            .boardId(boardId)
+                            .originName("origin" + i)
+                            .uniqueName("uniques" + i)
+                            .imagePath("path" + i)
+                            .build()
+        ).toList();
+
+        //when
+        int result = imagesRepository.saveAll(imageList);
+
+        //then
+        Assertions.assertEquals(5, result);
+
+    }
 
     private Long testObj() {
-        Board board = Board.builder()
+        BoardRequest boardRequest = BoardRequest.builder()
                 .title("제목")
                 .content("내용")
                 .author("작성자")
                 .build();
 
-        int result = boardMapper.save(board);
+        Long result = boardService.write(boardRequest);
 
-        return board.getId();
+        return result;
     }
 
 }

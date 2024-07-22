@@ -1,11 +1,14 @@
 package com.duck.myboard.request;
 
 import com.duck.myboard.domain.Board;
+import com.duck.myboard.domain.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @Getter
 @Setter
@@ -38,6 +41,15 @@ public class BoardRequest {
                 .id(boardId)
                 .title(boardRequest.getTitle())
                 .content(boardRequest.getContent())
+                .build();
+    }
+
+    public static Image imageConvert(Map<String, String> map, Long boardId) {
+        return Image.builder()
+                .boardId(boardId)
+                .originName(map.get("originName"))
+                .uniqueName(map.get("uniqueName"))
+                .imagePath(map.get("imagePath"))
                 .build();
     }
 }

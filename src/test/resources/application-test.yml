@@ -11,7 +11,7 @@ spring:
 
 #MyBatis
 mybatis:
-  mapper-locations: classpath:/myboard/mybatis/*.xml
+  mapper-locations: classpath:myboard/mybatis/*.xml
   type-aliases-package: com.duck.myboard.domain
   configuration:
     map-underscore-to-camel-case: true

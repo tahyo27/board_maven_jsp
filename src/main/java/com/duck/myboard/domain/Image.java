@@ -23,4 +23,5 @@ public class Image {
         this.uniqueName = uniqueName;
         this.imagePath = imagePath;
     }
+
 }

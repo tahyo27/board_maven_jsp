@@ -10,6 +10,7 @@ import com.duck.myboard.response.BoardResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,8 +34,8 @@ public class BoardService {
         return boardRepository.getOffsetPaging();
     }
 
-
-    public int write(BoardRequest boardRequest) {
+    @Transactional
+    public Long write(BoardRequest boardRequest) {
         List<Image> imagesList = new ArrayList<>();
         MultipartFile[] images = boardRequest.getImages();
         //board id 가져오기
@@ -44,18 +45,12 @@ public class BoardService {
         Long boardId = board.getId();
         log.info(">>>>>>>>>>>>>>>>>>>>> write boardId : {}", boardId);
         
-        //이미지 처리
+        //이미지 처리 분리 계획
         if(images != null) {
             for (MultipartFile image : images) {
                 try {
                     Map<String, String> map = googleImgUploadUtil.imgUpload(image);
-                    Image img = Image.builder()
-                            .boardId(boardId)
-                            .originName(map.get("originName"))
-                            .uniqueName(map.get("uniqueName"))
-                            .imagePath(map.get("imagePath"))
-                            .build();
-
+                    Image img = BoardRequest.imageConvert(map, boardId);
                     imagesList.add(img);
                 } catch (IOException e) {
                     log.info(">>>>>>>>>>>>>>> upload IOE : {}", e.getMessage());
@@ -67,9 +62,7 @@ public class BoardService {
         if(!imagesList.isEmpty()) {
             imagesRepository.saveAll(imagesList);
         }
-
-
-        return result;
+        return boardId;
     }
 
     public int edit(Long boardId, BoardRequest boardRequest) {
