@@ -13,13 +13,22 @@ import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -72,7 +81,7 @@ public class BoardController {
     @GetMapping("/imgtest")
     public String imgtest() {
 
-        return "imgtest";
+        return "insert";
     }
 
     @PostMapping("/imgtest")
@@ -83,5 +92,50 @@ public class BoardController {
         }
 
         return "";
+    }
+
+    @PostMapping("/image/temp")
+    public ResponseEntity<?> imageTemp(MultipartFile file) {
+        if(file.isEmpty()) {
+            return ResponseEntity.badRequest().body("파일이 업로드되지 않았습니다");
+        } else if (file.getOriginalFilename() == null) {
+            return ResponseEntity.badRequest().body("파일의 이름이 잘못되었습니다");
+        }
+
+        Path tempDirPath = Path.of("./temp/image");
+        try {
+            if (!Files.exists(tempDirPath)) {
+                Files.createDirectories(tempDirPath);
+            }
+            String originName = file.getOriginalFilename();
+            String uuidName = UUID.randomUUID().toString();
+            String tempName = uuidName + "_" + originName;
+            Path tempFilePath = tempDirPath.resolve(tempName); // 패스 합치기
+            //temp에 이미지 저장
+            Files.copy(file.getInputStream(), tempFilePath);
+
+            String imageUrl = "/temp/" + tempName;
+            return ResponseEntity.ok().body(Map.of("url", imageUrl));
+            
+        } catch (IOException e) {
+            log.info(">>>>>>>>>>>>>>>>>> image/temp controller : {}", e.getMessage());
+            return ResponseEntity.status(500).body("이미지 업로드 실패");
+        }
+
+    }
+
+    @GetMapping("/temp/{filename}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) throws MalformedURLException {
+        Path file = Path.of("./temp/image", filename); // 파일 시스템의 경로
+        Resource resource = new UrlResource(file.toUri()); // URI로 변환한 파일 리소스
+
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

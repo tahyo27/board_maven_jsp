@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INSERT</title>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css" />
 </head>
 <body>
+
+
     <main>
     <div>
-          <h1>INSERT TEST</h1>
+          <h1>인서트페이지</h1>
+          <form>
+          <div id="editor"></div>
+          <!--
           <form action="/boards" method="post" enctype="multipart/form-data">
               <label for="title">Title:</label>
               <input type="text" id="title" name="title" required>
@@ -29,7 +35,48 @@
 
               <button type="submit">Upload Image</button>
           </form>
+          -->
+
+
     </div>
     </main>
+
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+    <script>
+        const editor = new toastui.Editor({
+        	el: document.querySelector('#editor'),
+            previewStyle: 'vertical',
+            height: '500px',
+            initialEditType: 'wysiwyg',
+
+             hooks: {
+                addImageBlobHook: async (blob, callback) => {
+                    console.log(blob);
+                    console.log(callback);
+                    const formData = new FormData();
+                    formData.append('file', blob, blob.name);
+
+                   try {
+                        const response = await fetch('/image/temp', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                   if (!response.ok) {
+                        throw new Error('Upload failed');
+                   }
+
+                   const data = await response.json();
+                   console.log(data);
+                   callback(data.url);
+                   } catch (error) {
+                        console.error('Error:', error);
+                   }
+                }
+             }
+
+        });
+    </script>
 </body>
 </html>
