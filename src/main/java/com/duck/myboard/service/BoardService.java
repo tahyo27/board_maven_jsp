@@ -1,6 +1,7 @@
 package com.duck.myboard.service;
 
 import com.duck.myboard.common.GoogleImgUploadUtil;
+import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.domain.Image;
 import com.duck.myboard.repository.BoardRepository;
@@ -9,12 +10,17 @@ import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.response.BoardResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,32 +41,22 @@ public class BoardService {
     }
 
     @Transactional
-    public Long write(BoardRequest boardRequest) {
-        List<Image> imagesList = new ArrayList<>();
-        MultipartFile[] images = boardRequest.getImages();
-        //board id 가져오기
+    public Long write(BoardRequest boardRequest, List<ImageNameParser> parserList) throws IOException {
 
         Board board = BoardRequest.createConvert(boardRequest);
         int result = boardRepository.save(board);
         Long boardId = board.getId();
         log.info(">>>>>>>>>>>>>>>>>>>>> write boardId : {}", boardId);
-        
-        //이미지 처리 분리 계획
-        if(images != null) {
-            for (MultipartFile image : images) {
-                try {
-                    Map<String, String> map = googleImgUploadUtil.imgUpload(image);
-                    Image img = BoardRequest.imageConvert(map, boardId);
-                    imagesList.add(img);
-                } catch (IOException e) {
-                    log.info(">>>>>>>>>>>>>>> upload IOE : {}", e.getMessage());
+
+        if(!parserList.isEmpty()) {
+            List<Image> imageList = new ArrayList<>();
+            for(int i = 0; i < parserList.size(); i++) {
+                if(googleImgUploadUtil.imgUpload(parserList.get(0))) {
+                    Image image = parserList.get(0).convertImage();
+                    imageList.add(image);
                 }
-
             }
-        }
-
-        if(!imagesList.isEmpty()) {
-            imagesRepository.saveAll(imagesList);
+            imagesRepository.saveAll(imageList);
         }
         return boardId;
     }

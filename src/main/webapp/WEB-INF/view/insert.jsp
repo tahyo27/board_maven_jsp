@@ -13,8 +13,24 @@
     <main>
     <div>
           <h1>인서트페이지</h1>
-          <form>
+           <form id="hiddenForm" action="/boards" method="post">
+               <label for="title">Title:</label>
+               <input type="text" id="title" name="title" required>
+               <br><br>
+               <label for="author">Author:</label>
+               <input type="text" id="author" name="author" required>
+               <br><br>
+
+               <input type="hidden" name="content" id="hiddenContent">
+           </form>
+
           <div id="editor"></div>
+          <div>
+            <button type="button" id="saveButton">저장</button>
+          </div>
+
+
+
           <!--
           <form action="/boards" method="post" enctype="multipart/form-data">
               <label for="title">Title:</label>
@@ -75,8 +91,37 @@
                    }
                 }
              }
-
         });
+
+        const saveBoard = async () => {
+            if(editor.getMarkdown().length < 1) {
+                alert('내용을 입력하세요');
+                throw new Error('에디터에 내용이 필요합니다');
+            }
+            const param = {
+                content: editor.getHTML()
+            }
+            const content = editor.getHTML();
+
+             const hiddenContentElement = document.querySelector('#hiddenContent');
+             if (hiddenContentElement) {
+                 hiddenContentElement.value = content;
+             }
+             else {
+                console.error('Hidden content element not found');
+                return;
+             }
+             const hiddenFormElement = document.querySelector('#hiddenForm');
+             if (hiddenFormElement) {
+                hiddenFormElement.submit();
+             } else {
+                console.error('Hidden form not found');
+             }
+
+        };
+
+        document.querySelector('#saveButton').onclick = saveBoard;
+
     </script>
 </body>
 </html>

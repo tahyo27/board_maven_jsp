@@ -6,10 +6,14 @@ import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,24 +25,36 @@ public class GoogleImgUploadUtil {
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
-   private static final String GCS_URI_PREFIX = "https://storage.googleapis.com/";
+    private static final String GCS_URI_PREFIX = "https://storage.googleapis.com/";
 
     private final Storage storage;
 
-    public Map<String, String> imgUpload(MultipartFile imageFile) throws IOException { //업로드 이미지 주소 반환
-        String originName = imageFile.getOriginalFilename();
-        //UUID로 이미지 이름 중복 방지
-        String uuidName = UUID.randomUUID().toString();
+    public boolean imgUpload(ImageNameParser imageNameParser) throws IOException { //todo 예외처리 바꿔야함
+        //임시 저장 이미지 경로
+        Path tempFilePath = Paths.get("./temp/image").resolve(imageNameParser.getTempName());
 
-        //저장 이름 _ 합치기
-        String imagePath = GCS_URI_PREFIX + uuidName;
-        log.info(">>>>>>>>>>>>>>>>>>> uuidName : {}", uuidName);
+        byte[] imageFile = Files.readAllBytes(tempFilePath);
+        
+        String extension = imageNameParser.getExtension(); //확장자
+        
+        String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
-        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, uuidName).build();
+        if (extension.endsWith(".png")) {
+            contentType = MediaType.IMAGE_PNG_VALUE;
+        } else if (extension.endsWith(".jpg") || extension.endsWith(".jpeg")) {
+            contentType = MediaType.IMAGE_JPEG_VALUE;
+        } else if (extension.endsWith(".gif")) {
+            contentType = MediaType.IMAGE_GIF_VALUE;
+        }
+        
+        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, imageNameParser.getUuidName())
+                .setContentType(contentType)
+                .build();
 
-        Blob blob = storage.create(blobInfo, imageFile.getBytes());
+        Blob blob = storage.create(blobInfo, imageFile);
 
-        return Map.of("originName", originName, "uniqueName", uuidName, "imagePath", imagePath);
+        return blob != null && blob.getBlobId() != null;
+
     }
 
 }

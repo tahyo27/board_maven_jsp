@@ -18,14 +18,12 @@ public class BoardRequest {
     private String title;
     private String content;
     private String author;
-    private MultipartFile[] images;
 
     @Builder
-    public BoardRequest(String title, String content, String author, MultipartFile[] image) {
+    public BoardRequest(String title, String content, String author) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.images = image;
     }
 
     public static Board createConvert (BoardRequest boardRequest) {

@@ -1,5 +1,6 @@
 package com.duck.myboard.controller;
 
+import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.exception.BlankException;
 import com.duck.myboard.request.BoardRequest;
@@ -12,6 +13,10 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -26,9 +31,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -41,6 +44,11 @@ public class BoardController {
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
+    @GetMapping("/boards/insert")
+    public String insertBoard() {
+        return "insert";
+    }
+
     @GetMapping("/boards")
     public String getListBoard(Model model) {
         List<Board> boardList = boardService.getPagingList();
@@ -49,9 +57,24 @@ public class BoardController {
     }
 
     @PostMapping("/boards")
-    public String writeBoard(@ModelAttribute BoardRequest boardRequest) {
+    public String writeBoard(@ModelAttribute BoardRequest boardRequest) throws IOException { //todo 예외처리 바꿔야함
         blankValidation.isValid(boardRequest, "title", "content", "author");
-        Long result = boardService.write(boardRequest);
+        log.info(">>>>>>>>>>>>>>>>>>> writeBoard call~~~~~~~~~~~ boardRequest >> : {}", boardRequest);
+
+        List<ImageNameParser> imageList = new ArrayList<>();
+
+        Document doc = Jsoup.parse(boardRequest.getContent());
+        Elements images = doc.select("img");
+
+        for(Element image : images) {
+            String srcStr = image.attr("src");
+            ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+            imageList.add(imageNameParser);
+            image.attr("src", imageNameParser.getGcsPath());
+        }
+
+        Long result = boardService.write(boardRequest, imageList);
+
         return "redirect:/";
     }
 
@@ -84,16 +107,6 @@ public class BoardController {
         return "insert";
     }
 
-    @PostMapping("/imgtest")
-    public String uploadtest(@ModelAttribute ImgRequestTest imgRequestTest) throws IOException {
-
-        for(MultipartFile file : imgRequestTest.getImages()) {
-            log.info(">>>>>>>>>>>>>>>>>>>>>>>>> {}", file.getOriginalFilename());
-        }
-
-        return "";
-    }
-
     @PostMapping("/image/temp")
     public ResponseEntity<?> imageTemp(MultipartFile file) {
         if(file.isEmpty()) {
@@ -114,7 +127,8 @@ public class BoardController {
             //temp에 이미지 저장
             Files.copy(file.getInputStream(), tempFilePath);
 
-            String imageUrl = "/temp/" + tempName;
+            String imageUrl = "/temp/image/" + tempName; // 이미지 받을 주소
+
             return ResponseEntity.ok().body(Map.of("url", imageUrl));
             
         } catch (IOException e) {
@@ -124,11 +138,12 @@ public class BoardController {
 
     }
 
-    @GetMapping("/temp/{filename}")
+    @GetMapping("/temp/image/{filename}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) throws MalformedURLException {
-        Path file = Path.of("./temp/image", filename); // 파일 시스템의 경로
-        Resource resource = new UrlResource(file.toUri()); // URI로 변환한 파일 리소스
+        Path file = Path.of("./temp/image", filename); // 임시 저장 이미지파일 경로
+        Resource resource = new UrlResource(file.toUri());
+        log.info(">>>>>>>>>>>>>>>>> resource : {}", resource);
 
         if (resource.exists() || resource.isReadable()) {
             return ResponseEntity.ok()
@@ -138,4 +153,39 @@ public class BoardController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/editor")
+    public String editor(@RequestParam("content") String content) {
+        // 저장시 할일 콘텐트 이미지 파싱해서 이미지 분리후 스플릿해서 uuid와 오리진으로 나누고
+        // db에 image에 저장 같이하고 클라우드에 올리기 컨트롤러에서 하지말고 서비스에서 한번에 할까
+        List<ImageNameParser> imageList = new ArrayList<>();
+        log.info(">>>>>>>>>>>>>>>>>>> eidtor call~~~~~~~~~~~");
+        Document doc = Jsoup.parse(content);
+        Elements images = doc.select("img");
+
+        for(Element image : images) {
+            String srcStr = image.attr("src");
+            ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+            imageList.add(imageNameParser);
+            image.attr("src", imageNameParser.getGcsPath());
+        }
+
+        for(ImageNameParser item : imageList) {
+            log.info(">>>>>>>>>>>>>>>>>>>> {}", item);
+        }
+
+        return "/";
+    }
+
+//    private MediaType getMediaTypeForFileName(String fileName) {
+//        if (fileName.endsWith(".png")) {
+//            return MediaType.IMAGE_PNG;
+//        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+//            return MediaType.IMAGE_JPEG;
+//        } else if (fileName.endsWith(".gif")) {
+//            return MediaType.IMAGE_GIF;
+//        } else {
+//            return MediaType.APPLICATION_OCTET_STREAM;
+//        }
+//    }
 }
