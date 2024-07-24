@@ -72,8 +72,14 @@ public class BoardController {
             imageList.add(imageNameParser);
             image.attr("src", imageNameParser.getGcsPath());
         }
+        String updatedContent = doc.toString();
 
+        boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
+
+        Long before = System.currentTimeMillis();
         Long result = boardService.write(boardRequest, imageList);
+        Long after = System.currentTimeMillis();
+        log.info(">>>>>>>>>>>>>>>>>>> time check {}", after - before);
 
         return "redirect:/";
     }

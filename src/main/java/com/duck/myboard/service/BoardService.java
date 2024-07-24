@@ -44,7 +44,7 @@ public class BoardService {
     public Long write(BoardRequest boardRequest, List<ImageNameParser> parserList) throws IOException {
 
         Board board = BoardRequest.createConvert(boardRequest);
-        int result = boardRepository.save(board);
+        boardRepository.save(board);
         Long boardId = board.getId();
         log.info(">>>>>>>>>>>>>>>>>>>>> write boardId : {}", boardId);
 
@@ -52,7 +52,7 @@ public class BoardService {
             List<Image> imageList = new ArrayList<>();
             for(int i = 0; i < parserList.size(); i++) {
                 if(googleImgUploadUtil.imgUpload(parserList.get(0))) {
-                    Image image = parserList.get(0).convertImage();
+                    Image image = parserList.get(0).convertImage(boardId);
                     imageList.add(image);
                 }
             }

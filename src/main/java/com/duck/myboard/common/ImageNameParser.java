@@ -35,8 +35,9 @@ public class ImageNameParser {
 
     }
 
-    public Image convertImage() {
+    public Image convertImage(Long boardId) {
         return Image.builder()
+                .boardId(boardId)
                 .originName(originName)
                 .uniqueName(uuidName)
                 .imagePath(gcsPath)
