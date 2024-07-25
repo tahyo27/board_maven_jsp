@@ -15,8 +15,10 @@ public class ExceptionController {
         int stCode = e.getStatusCode();
         String message = e.getMessage();
 
-        log.info(">>>>>>>>>>>>>>>>>>> 에러 페이지 내용 : code = " + stCode + " , message = " + message);
+        log.error(">>>>>>>>>>>>>>>>>>> BoardException : code = " + stCode + " , message = " + message);
 
         return "redirect:error";
     }
+
+
 }

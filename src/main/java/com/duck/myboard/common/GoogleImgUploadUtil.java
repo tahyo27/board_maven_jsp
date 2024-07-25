@@ -1,5 +1,6 @@
 package com.duck.myboard.common;
 
+import com.duck.myboard.exception.GcsUploadException;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -8,14 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -29,14 +27,32 @@ public class GoogleImgUploadUtil {
 
     private final Storage storage;
 
-    public boolean imgUpload(ImageNameParser imageNameParser) throws IOException { //todo 예외처리 바꿔야함
+    public boolean imgUpload(ImageNameParser imageNameParser) { //todo 예외처리 바꿔야함
         //임시 저장 이미지 경로
         Path tempFilePath = Paths.get("./temp/image").resolve(imageNameParser.getTempName());
 
-        byte[] imageFile = Files.readAllBytes(tempFilePath);
-        
+        try {
+            byte[] imageFile = Files.readAllBytes(tempFilePath);
+
+            String contentType = getContentType(imageNameParser);
+
+            BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, imageNameParser.getUuidName())
+                    .setContentType(contentType)
+                    .build();
+
+            Blob blob = storage.create(blobInfo, imageFile);
+
+            return blob != null && blob.getBlobId() != null;
+
+        } catch (IOException e) {
+            throw new GcsUploadException(e);
+        }
+
+    }
+
+    private static String getContentType(ImageNameParser imageNameParser) {
         String extension = imageNameParser.getExtension(); //확장자
-        
+
         String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
         if (extension.endsWith(".png")) {
@@ -46,15 +62,7 @@ public class GoogleImgUploadUtil {
         } else if (extension.endsWith(".gif")) {
             contentType = MediaType.IMAGE_GIF_VALUE;
         }
-        
-        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, imageNameParser.getUuidName())
-                .setContentType(contentType)
-                .build();
-
-        Blob blob = storage.create(blobInfo, imageFile);
-
-        return blob != null && blob.getBlobId() != null;
-
+        return contentType;
     }
 
 }

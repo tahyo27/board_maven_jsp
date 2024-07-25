@@ -3,6 +3,7 @@ package com.duck.myboard.controller;
 import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.exception.BlankException;
+import com.duck.myboard.exception.BoardSaveException;
 import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.request.ImgRequestTest;
 import com.duck.myboard.response.BoardResponse;
@@ -59,10 +60,9 @@ public class BoardController {
     @PostMapping("/boards")
     public String writeBoard(@ModelAttribute BoardRequest boardRequest) throws IOException { //todo 예외처리 바꿔야함
         blankValidation.isValid(boardRequest, "title", "content", "author");
-        log.info(">>>>>>>>>>>>>>>>>>> writeBoard call~~~~~~~~~~~ boardRequest >> : {}", boardRequest);
+        log.info("board Reqeust >>>>>>>>>>>>>>>>>>>>>> {}", boardRequest.getContent());
 
         List<ImageNameParser> imageList = new ArrayList<>();
-
         Document doc = Jsoup.parse(boardRequest.getContent());
         Elements images = doc.select("img");
 
@@ -73,11 +73,16 @@ public class BoardController {
             image.attr("src", imageNameParser.getGcsPath());
         }
         String updatedContent = doc.toString();
-
+        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
         boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
 
         Long before = System.currentTimeMillis();
-        Long result = boardService.write(boardRequest, imageList);
+        Long boardId = boardService.write(boardRequest, imageList);
+
+        if(boardId == null) {
+            throw new BoardSaveException();
+        }
+
         Long after = System.currentTimeMillis();
         log.info(">>>>>>>>>>>>>>>>>>> time check {}", after - before);
 

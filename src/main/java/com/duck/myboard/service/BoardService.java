@@ -4,6 +4,7 @@ import com.duck.myboard.common.GoogleImgUploadUtil;
 import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.domain.Image;
+import com.duck.myboard.exception.GcsUploadException;
 import com.duck.myboard.repository.BoardRepository;
 import com.duck.myboard.repository.ImagesRepository;
 import com.duck.myboard.request.BoardRequest;
@@ -41,19 +42,20 @@ public class BoardService {
     }
 
     @Transactional
-    public Long write(BoardRequest boardRequest, List<ImageNameParser> parserList) throws IOException {
+    public Long write(BoardRequest boardRequest, List<ImageNameParser> parserList) {
 
         Board board = BoardRequest.createConvert(boardRequest);
         boardRepository.save(board);
         Long boardId = board.getId();
-        log.info(">>>>>>>>>>>>>>>>>>>>> write boardId : {}", boardId);
 
         if(!parserList.isEmpty()) {
             List<Image> imageList = new ArrayList<>();
-            for(int i = 0; i < parserList.size(); i++) {
-                if(googleImgUploadUtil.imgUpload(parserList.get(0))) {
-                    Image image = parserList.get(0).convertImage(boardId);
+            for (ImageNameParser imageNameParser : parserList) {
+                if (googleImgUploadUtil.imgUpload(imageNameParser)) {
+                    Image image = imageNameParser.convertImage(boardId);
                     imageList.add(image);
+                } else {
+                    throw new GcsUploadException();
                 }
             }
             imagesRepository.saveAll(imageList);
