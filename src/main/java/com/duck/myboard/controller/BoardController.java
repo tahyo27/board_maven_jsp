@@ -72,19 +72,16 @@ public class BoardController {
             imageList.add(imageNameParser);
             image.attr("src", imageNameParser.getGcsPath());
         }
+
         String updatedContent = doc.toString();
         log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
         boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
 
-        Long before = System.currentTimeMillis();
         Long boardId = boardService.write(boardRequest, imageList);
 
         if(boardId == null) {
             throw new BoardSaveException();
         }
-
-        Long after = System.currentTimeMillis();
-        log.info(">>>>>>>>>>>>>>>>>>> time check {}", after - before);
 
         return "redirect:/";
     }
@@ -163,29 +160,6 @@ public class BoardController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    @PostMapping("/editor")
-    public String editor(@RequestParam("content") String content) {
-        // 저장시 할일 콘텐트 이미지 파싱해서 이미지 분리후 스플릿해서 uuid와 오리진으로 나누고
-        // db에 image에 저장 같이하고 클라우드에 올리기 컨트롤러에서 하지말고 서비스에서 한번에 할까
-        List<ImageNameParser> imageList = new ArrayList<>();
-        log.info(">>>>>>>>>>>>>>>>>>> eidtor call~~~~~~~~~~~");
-        Document doc = Jsoup.parse(content);
-        Elements images = doc.select("img");
-
-        for(Element image : images) {
-            String srcStr = image.attr("src");
-            ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-            imageList.add(imageNameParser);
-            image.attr("src", imageNameParser.getGcsPath());
-        }
-
-        for(ImageNameParser item : imageList) {
-            log.info(">>>>>>>>>>>>>>>>>>>> {}", item);
-        }
-
-        return "/";
     }
 
 //    private MediaType getMediaTypeForFileName(String fileName) {

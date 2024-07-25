@@ -2,7 +2,9 @@ package com.duck.myboard.common;
 
 import com.duck.myboard.config.GoogleStorageConfig;
 import com.duck.myboard.domain.Image;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Getter
+@Setter
 @ToString
 public class ImageNameParser {
 
@@ -18,7 +21,6 @@ public class ImageNameParser {
     private final String gcsPath;
     private final String tempName;
     private final String extension;
-
     public ImageNameParser(String src) { //todo 주소처리 고민 yml에 넣을지 아니면 스태틱으로 쓸지
         String replacedName = src.replace("/temp/image/", "");
         String[] parts = replacedName.split("_", 2);
