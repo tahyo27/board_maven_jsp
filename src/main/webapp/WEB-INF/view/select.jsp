@@ -10,11 +10,11 @@
     <main>
         <div>
               <h1>셀렉트 페이지</h1>
-              <div>${board.title}</div>
-              <div>${board.author}</div>
+              <div><c:out value="${board.title}" escapeXml="true" /></div>
+              <div><c:out value="${board.author}" escapeXml="true" /></div>
 
               <div>
-                <div>${board.content}</div>
+                <c:out value="${board.content}" escapeXml="false" />
               </div>
 
 

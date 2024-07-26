@@ -73,7 +73,7 @@ public class BoardController {
             image.attr("src", imageNameParser.getGcsPath());
         }
 
-        String updatedContent = doc.toString();
+        String updatedContent = doc.body().html();
         log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
         boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
 
@@ -105,6 +105,7 @@ public class BoardController {
     @GetMapping("/boards/{boardId}")
     public String selectBoard(@PathVariable(value = "boardId") Long boardId, Model model) {
         BoardResponse boardResponse = boardService.get(boardId);
+        log.info(">>>>>>>>>>>>>>>>> {}" , boardResponse.getContent());
         model.addAttribute("board", boardResponse);
         return "select";
     }

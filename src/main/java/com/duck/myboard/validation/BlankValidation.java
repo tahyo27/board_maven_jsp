@@ -18,7 +18,7 @@ public class BlankValidation {
                 field.setAccessible(true);
                 Object value = field.get(obj);
                 if(value == null || (value instanceof String && ((String) value).trim().isEmpty())) {
-                    throw  new BlankException();
+                    throw new BlankException();
                 }
             }
         } catch (IllegalAccessException e) {
