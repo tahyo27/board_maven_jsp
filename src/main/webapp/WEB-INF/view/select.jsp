@@ -8,13 +8,20 @@
 </head>
 <body>
     <main>
-    <div>
-         <div>${board.title}</div>
-         <div>${board.author}</div>
-    <div>
-        <div>${board.content}</div>
-    <div>
-    </div>
-    </main>
+        <div>
+              <h1>셀렉트 페이지</h1>
+              <div>${board.title}</div>
+              <div>${board.author}</div>
+
+              <div>
+                <div>${board.content}</div>
+              </div>
+
+
+
+        </div>
+        </main>
+
+
 </body>
 </html>

@@ -12,21 +12,13 @@
 
     <main>
     <div>
-          <h1>인서트페이지</h1>
-           <form id="hiddenForm" action="/boards" method="post">
-               <label for="title">Title:</label>
-               <input type="text" id="title" name="title" required>
-               <br><br>
-               <label for="author">Author:</label>
-               <input type="text" id="author" name="author" required>
-               <br><br>
+          <h1>수정 페이지</h1>
+          <div>${board.title}</div>
+          <div>${board.author}</div>
 
-               <input type="hidden" name="content" id="hiddenContent">
-           </form>
 
-          <div id="editor"></div>
           <div>
-            <button type="button" id="saveButton">저장</button>
+            <div id="editor"></div>
           </div>
 
 
@@ -92,7 +84,10 @@
                 }
              }
         });
+        const contentData = `<c:out value="${board.content}" escapeXml="false" />`;
+        editor.setHTML(contentData);
 
+        /* 보드 업데이트 용으로 바꿔야함 */
         const saveBoard = async () => {
             if(editor.getMarkdown().length < 1) {
                 alert('내용을 입력하세요');

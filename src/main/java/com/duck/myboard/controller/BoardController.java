@@ -162,6 +162,15 @@ public class BoardController {
         }
     }
 
+    @GetMapping("/updatetest")
+    public String updatetest(Model model) {
+        BoardResponse board = boardService.get(20028L);
+        log.info("board >>>>>>>>>>>> {}", board);
+
+        model.addAttribute("board", board);
+        return "update";
+    }
+
 //    private MediaType getMediaTypeForFileName(String fileName) {
 //        if (fileName.endsWith(".png")) {
 //            return MediaType.IMAGE_PNG;

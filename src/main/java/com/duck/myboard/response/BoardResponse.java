@@ -4,10 +4,12 @@ package com.duck.myboard.response;
 import com.duck.myboard.domain.Board;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.format.DateTimeFormatter;
 
 @Getter
+@ToString
 public class BoardResponse {
     private String title;
     private String content;
