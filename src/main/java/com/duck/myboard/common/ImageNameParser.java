@@ -22,6 +22,7 @@ public class ImageNameParser {
     private final String tempName;
     private final String extension;
     public ImageNameParser(String src) { //todo 주소처리 고민 yml에 넣을지 아니면 스태틱으로 쓸지
+
         String replacedName = src.replace("/temp/image/", "");
         String[] parts = replacedName.split("_", 2);
         String origin = parts[1];

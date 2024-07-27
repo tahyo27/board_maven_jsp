@@ -1,6 +1,6 @@
 package com.duck.myboard.service;
 
-import com.duck.myboard.common.GoogleImgUploadUtil;
+import com.duck.myboard.common.GoogleStorageUtil;
 import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.domain.Image;
@@ -11,19 +11,11 @@ import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.response.BoardResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -32,7 +24,8 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final ImagesRepository imagesRepository;
-    private final GoogleImgUploadUtil googleImgUploadUtil;
+    private final GoogleStorageUtil googleStorageUtil;
+
     public List<Board> getList() {
         return boardRepository.findAll();
     }
@@ -51,7 +44,7 @@ public class BoardService {
         if(!parserList.isEmpty()) {
             List<Image> imageList = new ArrayList<>();
             for (ImageNameParser imageNameParser : parserList) {
-                if (googleImgUploadUtil.imgUpload(imageNameParser)) {
+                if (googleStorageUtil.imgUpload(imageNameParser)) {
                     Image image = imageNameParser.convertImage(boardId);
                     imageList.add(image);
                 } else {
@@ -63,9 +56,9 @@ public class BoardService {
         return boardId;
     }
 
-    public int edit(Long boardId, BoardRequest boardRequest) {
+    public int edit(Long boardId, BoardRequest boardRequest) { //todo 수정할때 이미지처리 어떤방식으로 할지 고민
 
-        Board board = BoardRequest.editConvert(boardId, boardRequest);
+        Board board = BoardRequest.editConvert(boardRequest);
 
         return boardRepository.update(board);
     }
@@ -78,4 +71,39 @@ public class BoardService {
         Board board = boardRepository.findById(boardId);
         return BoardResponse.convert(board);
     }
+
+    public List<String> getImagePath(Long boardId) {
+        return imagesRepository.pathFindByBoardId(boardId);
+    }
+
+    @Transactional
+    public int edittest(BoardRequest boardRequest, List<ImageNameParser> parserList, List<String> deletePath) {
+        log.info(">>>>>>>>>>>>>>>>>> service board Reqeust {} ", boardRequest);
+        Board board = BoardRequest.editConvert(boardRequest); // 글 수정후
+        Long boardId = board.getId();
+        int result = boardRepository.update(board);
+        log.info(">>>>>>>>>>>>>>>>>>>>>>> service deletePath {}", deletePath);
+        if(!deletePath.isEmpty()) { //클라우드 삭제
+            for(String str : deletePath) {
+                log.info("str >>>>>>>>>>>>> {}", str);
+                googleStorageUtil.imgDelete(str);
+            }
+            int deleteResult = imagesRepository.deleteByBoardIdAndPath(boardId, deletePath);
+        }
+
+        if(!parserList.isEmpty()) {
+            List<Image> imageList = new ArrayList<>();
+            for (ImageNameParser imageNameParser : parserList) {
+                if (googleStorageUtil.imgUpload(imageNameParser)) {
+                    Image image = imageNameParser.convertImage(boardId);
+                    imageList.add(image);
+                } else {
+                    throw new GcsUploadException();
+                }
+            }
+            imagesRepository.saveAll(imageList);
+        }
+        return result;
+    }
+
 }

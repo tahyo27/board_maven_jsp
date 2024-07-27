@@ -13,37 +13,25 @@
     <main>
     <div>
           <h1>수정 페이지</h1>
-          <div>${board.title}</div>
-          <div>${board.author}</div>
 
+          <form id="hiddenForm" action="/edittest" method="post">
+          <label for="title">Title:</label>
+          <input type="text" id="title" name="title" value="${board.title}" required>
+          <br><br>
+
+          <input type="text" name="id" value="${board.id}">
+          <input type="text" name="author" value="${board.author}">
+          <input type="hidden" name="content" id="hiddenContent">
+          </form>
 
           <div>
             <div id="editor"></div>
           </div>
+          <div>
+            <button type="button" id="saveButton">수정</button>
+          </div>
 
 
-
-          <!--
-          <form action="/boards" method="post" enctype="multipart/form-data">
-              <label for="title">Title:</label>
-              <input type="text" id="title" name="title" required>
-              <br><br>
-
-              <label for="content">Content:</label>
-              <textarea id="content" name="content" rows="4" cols="50" required></textarea>
-              <br><br>
-
-              <label for="author">Author:</label>
-              <input type="text" id="author" name="author" required>
-              <br><br>
-
-              <label for="file">Choose an image to upload:</label>
-              <input type="file" id="file" name="images" accept="image/*" multiple>
-              <br><br>
-
-              <button type="submit">Upload Image</button>
-          </form>
-          -->
 
 
     </div>
@@ -93,10 +81,8 @@
                 alert('내용을 입력하세요');
                 throw new Error('에디터에 내용이 필요합니다');
             }
-            const param = {
-                content: editor.getHTML()
-            }
-            const content = editor.getHTML();
+
+             const content = editor.getHTML();
 
              const hiddenContentElement = document.querySelector('#hiddenContent');
              if (hiddenContentElement) {

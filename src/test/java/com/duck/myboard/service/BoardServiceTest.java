@@ -1,28 +1,21 @@
 package com.duck.myboard.service;
 
-import com.duck.myboard.common.GoogleImgUploadUtil;
+import com.duck.myboard.common.GoogleStorageUtil;
 import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.domain.Image;
 import com.duck.myboard.exception.GcsUploadException;
-import com.duck.myboard.mapper.BoardMapper;
-import com.duck.myboard.repository.BoardRepository;
 import com.duck.myboard.repository.ImagesRepository;
 import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.response.BoardResponse;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -41,7 +34,7 @@ class BoardServiceTest {
     private BoardService boardService;
 
     @MockBean
-    private GoogleImgUploadUtil googleImgUploadUtil;
+    private GoogleStorageUtil googleStorageUtil;
 
     @Autowired
     private ImagesRepository imagesRepository;
@@ -63,7 +56,7 @@ class BoardServiceTest {
         imageNameParserList.add(imageNameParser1);
         imageNameParserList.add(imageNameParser2);
 
-        when(googleImgUploadUtil.imgUpload(any(ImageNameParser.class))).thenReturn(true);
+        when(googleStorageUtil.imgUpload(any(ImageNameParser.class))).thenReturn(true);
 
         //when
         Long boardId = boardService.write(board, imageNameParserList);
@@ -182,6 +175,8 @@ class BoardServiceTest {
         Assertions.assertEquals(5, result);
 
     }
+
+
 
     private Long testObj() {
         BoardRequest boardRequest = BoardRequest.builder()

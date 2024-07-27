@@ -9,4 +9,7 @@ import java.util.List;
 public interface ImageMapper {
     int save(Image images);
     int saveAll(List<Image> images);
+    List<String> pathFindByBoardId(Long boardId);
+
+    int deleteByBoardIdAndPath(Long boardId, List<String> deletePath);
 }

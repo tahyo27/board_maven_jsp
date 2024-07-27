@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @ToString
 public class BoardResponse {
+
+    private Long id;
     private String title;
     private String content;
     private String author;
@@ -18,7 +20,8 @@ public class BoardResponse {
     private long count;
 
     @Builder
-    public BoardResponse(String title, String content, String author, String createAt, long count) {
+    public BoardResponse(Long id, String title, String content, String author, String createAt, long count) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
@@ -31,6 +34,7 @@ public class BoardResponse {
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         return BoardResponse.builder()
+                .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .author(board.getAuthor())

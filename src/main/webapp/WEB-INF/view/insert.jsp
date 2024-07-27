@@ -98,9 +98,7 @@
                 alert('내용을 입력하세요');
                 throw new Error('에디터에 내용이 필요합니다');
             }
-            const param = {
-                content: editor.getHTML()
-            }
+
             const content = editor.getHTML();
 
              const hiddenContentElement = document.querySelector('#hiddenContent');

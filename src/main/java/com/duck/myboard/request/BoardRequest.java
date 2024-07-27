@@ -15,12 +15,14 @@ import java.util.Map;
 @ToString
 public class BoardRequest {
 
+    private Long id;
     private String title;
     private String content;
     private String author;
 
     @Builder
-    public BoardRequest(String title, String content, String author) {
+    public BoardRequest(Long id, String title, String content, String author) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
@@ -34,9 +36,9 @@ public class BoardRequest {
                 .build();
     }
 
-    public static Board editConvert (Long boardId, BoardRequest boardRequest) {
+    public static Board editConvert (BoardRequest boardRequest) {
         return Board.builder()
-                .id(boardId)
+                .id(boardRequest.getId())
                 .title(boardRequest.getTitle())
                 .content(boardRequest.getContent())
                 .build();

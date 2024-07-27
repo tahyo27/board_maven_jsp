@@ -66,6 +66,19 @@ class ImageRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("이미지 보드네임 불러오기 테스트")
+    void get_image_path_test() {
+        //given
+        Long boardId = 20029L;
+
+        //when
+        List<String> imageList = imageMapper.pathFindByBoardId(boardId);
+
+        //then
+        Assertions.assertTrue(imageList.isEmpty());
+    }
+
 
 
 

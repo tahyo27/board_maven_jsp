@@ -17,7 +17,6 @@ public class Board {
     private String author;
     private long count;
     private final LocalDateTime createAt;
-    private List<Image> images;
 
     @Builder
     public Board(Long id, String title, String content, String author) {

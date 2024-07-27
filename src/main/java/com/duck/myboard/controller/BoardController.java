@@ -7,6 +7,7 @@ import com.duck.myboard.exception.BoardSaveException;
 import com.duck.myboard.request.BoardRequest;
 import com.duck.myboard.request.ImgRequestTest;
 import com.duck.myboard.response.BoardResponse;
+import com.duck.myboard.response.ImageResponse;
 import com.duck.myboard.service.BoardService;
 import com.duck.myboard.validation.BlankValidation;
 import com.google.cloud.storage.Blob;
@@ -58,7 +59,7 @@ public class BoardController {
     }
 
     @PostMapping("/boards")
-    public String writeBoard(@ModelAttribute BoardRequest boardRequest) throws IOException { //todo 예외처리 바꿔야함
+    public String writeBoard(@ModelAttribute BoardRequest boardRequest) { //todo 예외처리 바꿔야함
         blankValidation.isValid(boardRequest, "title", "content", "author");
         log.info("board Reqeust >>>>>>>>>>>>>>>>>>>>>> {}", boardRequest.getContent());
 
@@ -66,11 +67,13 @@ public class BoardController {
         Document doc = Jsoup.parse(boardRequest.getContent());
         Elements images = doc.select("img");
 
-        for(Element image : images) {
-            String srcStr = image.attr("src");
-            ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-            imageList.add(imageNameParser);
-            image.attr("src", imageNameParser.getGcsPath());
+        if(!images.isEmpty()) {
+            for(Element image : images) {
+                String srcStr = image.attr("src");
+                ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+                imageList.add(imageNameParser);
+                image.attr("src", imageNameParser.getGcsPath());
+            }
         }
 
         String updatedContent = doc.body().html();
@@ -88,7 +91,7 @@ public class BoardController {
 
     @PatchMapping("/boards/{boardId}")
     public String editBoard(@PathVariable(value = "boardId") Long boardId, @ModelAttribute BoardRequest boardRequest) {
-        blankValidation.isValid(boardRequest, "title", "content");
+        blankValidation.isValid(boardRequest, "title", "content"); //todo 이미지 수정 때 어떻게 할지 고민 /image/temp 로 시작하는 것만 바꾸기
         log.info(">>>>>>>>>>>>>>>>>>>>>> edit board = {}", boardRequest);
         int result = boardService.edit(boardId, boardRequest);
 
@@ -116,8 +119,8 @@ public class BoardController {
         return "insert";
     }
 
-    @PostMapping("/image/temp")
-    public ResponseEntity<?> imageTemp(MultipartFile file) {
+    @PostMapping("/image/temp")  
+    public ResponseEntity<?> imageTemp(MultipartFile file) { //에디터 이미지 임시저장
         if(file.isEmpty()) {
             return ResponseEntity.badRequest().body("파일이 업로드되지 않았습니다");
         } else if (file.getOriginalFilename() == null) {
@@ -147,7 +150,7 @@ public class BoardController {
 
     }
 
-    @GetMapping("/temp/image/{filename}")
+    @GetMapping("/temp/image/{filename}") //임시 저장한 이미지 에디터로 보내는 주소
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) throws MalformedURLException {
         Path file = Path.of("./temp/image", filename); // 임시 저장 이미지파일 경로
@@ -170,6 +173,46 @@ public class BoardController {
 
         model.addAttribute("board", board);
         return "update";
+    }
+    @PostMapping("/edittest")
+    public String edittest(@ModelAttribute BoardRequest boardRequest) {
+        log.info(">>>>>>>>>>>>>board edit {} ", boardRequest);
+
+        List<String> savedList = boardService.getImagePath(boardRequest.getId());
+        log.info(">>>>>>>>>>>>>>>>>>>>savedList {}", savedList);
+        //image에서 저장되어있는 gcspath 불러와서 비교후 지워야 하는거 필터링 해아할듯
+        Document doc = Jsoup.parse(boardRequest.getContent());
+        Elements images = doc.select("img");
+
+        List<ImageNameParser> imageList = new ArrayList<>(); //todo 이미지 없을때 처리 생각
+        List<String> existList = new ArrayList<>();
+        if(!images.isEmpty()) {
+            for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
+                String srcStr = image.attr("src");
+                if(srcStr.contains("/temp/image/")) {
+                    log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
+                    ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+                    imageList.add(imageNameParser);
+                    image.attr("src", imageNameParser.getGcsPath());
+                } else {
+                    existList.add(srcStr);
+                }
+            }
+        }
+        List<String> deletePath = savedList.stream()
+                .filter(item -> !existList.contains(item)).toList();
+        
+        //넘겨서 지우고 추가
+
+        log.info(">>>>>>>>>>>>>>>>>>>>>> deletePath {}", deletePath);
+
+        String updatedContent = doc.body().html();
+        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
+        boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
+        boardService.edittest(boardRequest, imageList, deletePath);
+        // existList와
+
+        return "";
     }
 
 //    private MediaType getMediaTypeForFileName(String fileName) {

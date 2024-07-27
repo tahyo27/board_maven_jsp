@@ -14,4 +14,21 @@
             (#{image.boardId}, #{image.originName}, #{image.uniqueName}, #{image.imagePath})
         </foreach>
     </insert>
+
+    <select id="pathFindByBoardId" resultType="java.lang.String">
+        SELECT image_path
+        FROM images
+        WHERE board_id = #{boardId}
+    </select>
+
+    <delete id="deleteByBoardIdAndPath">
+        DELETE FROM images
+        WHERE board_id = #{boardId}
+        AND image_path IN
+        <foreach item="path" collection="deletePath" open="(" separator="," close=")">
+            #{path}
+        </foreach>
+    </delete>
+
+
 </mapper>
