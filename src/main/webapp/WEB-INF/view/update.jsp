@@ -14,12 +14,10 @@
     <div>
           <h1>수정 페이지</h1>
 
-          <form id="hiddenForm" action="/edittest" method="post">
+          <form id="hiddenForm" action="/boards/${board.id}/update" method="post">
           <label for="title">Title:</label>
           <input type="text" id="title" name="title" value="${board.title}" required>
           <br><br>
-
-          <input type="text" name="id" value="${board.id}">
           <input type="text" name="author" value="${board.author}">
           <input type="hidden" name="content" id="hiddenContent">
           </form>

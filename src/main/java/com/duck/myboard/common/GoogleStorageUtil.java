@@ -28,7 +28,7 @@ public class GoogleStorageUtil {
 
     private final Storage storage;
 
-    public boolean imgUpload(ImageNameParser imageNameParser) { //todo boardId받아서 루트 어떻게 처리할지
+    public boolean imgUpload(ImageNameParser imageNameParser) {
         //임시 저장 이미지 경로
         Path tempFilePath = Paths.get("./temp/image").resolve(imageNameParser.getTempName());
 
@@ -64,9 +64,9 @@ public class GoogleStorageUtil {
         boolean deleted = storage.delete(idWithGeneration);
 
         if (deleted) {
-            log.info("Object " + path + " was permanently deleted from " + bucketName);
+            log.info(bucketName + "의 Object " + path + "가 삭제되었습니다 ");
         } else {
-            log.warn("Failed to delete object " + path + " from " + bucketName);
+            log.warn(bucketName + "에서"  + path + "의 삭제가 실패했습니다" );
         }
     }
 

@@ -56,11 +56,34 @@ public class BoardService {
         return boardId;
     }
 
-    public int edit(Long boardId, BoardRequest boardRequest) { //todo 수정할때 이미지처리 어떤방식으로 할지 고민
+    @Transactional
+    public int edit(BoardRequest boardRequest, List<ImageNameParser> parserList, List<String> deletePath) { //todo 수정할때 이미지처리 어떤방식으로 할지 고민
 
-        Board board = BoardRequest.editConvert(boardRequest);
+        Board board = BoardRequest.editConvert(boardRequest); // 글 수정후
+        Long boardId = board.getId();
+        int result = boardRepository.update(board);
+        log.info(">>>>>>>>>>>>>>>>>>>>>>> service deletePath {}", deletePath);
+        if(!deletePath.isEmpty()) { //클라우드 삭제
+            for(String str : deletePath) {
+                log.info("str >>>>>>>>>>>>> {}", str);
+                googleStorageUtil.imgDelete(str);
+            }
+            imagesRepository.deleteByBoardIdAndPath(boardId, deletePath);
+        }
 
-        return boardRepository.update(board);
+        if(!parserList.isEmpty()) { //todo write랑 붕복되는 부분
+            List<Image> imageList = new ArrayList<>();
+            for (ImageNameParser imageNameParser : parserList) {
+                if (googleStorageUtil.imgUpload(imageNameParser)) {
+                    Image image = imageNameParser.convertImage(boardId);
+                    imageList.add(image);
+                } else {
+                    throw new GcsUploadException();
+                }
+            }
+            imagesRepository.saveAll(imageList);
+        }
+        return result;
     }
 
     public int delete(Long boardId) {
@@ -76,34 +99,6 @@ public class BoardService {
         return imagesRepository.pathFindByBoardId(boardId);
     }
 
-    @Transactional
-    public int edittest(BoardRequest boardRequest, List<ImageNameParser> parserList, List<String> deletePath) {
-        log.info(">>>>>>>>>>>>>>>>>> service board Reqeust {} ", boardRequest);
-        Board board = BoardRequest.editConvert(boardRequest); // 글 수정후
-        Long boardId = board.getId();
-        int result = boardRepository.update(board);
-        log.info(">>>>>>>>>>>>>>>>>>>>>>> service deletePath {}", deletePath);
-        if(!deletePath.isEmpty()) { //클라우드 삭제
-            for(String str : deletePath) {
-                log.info("str >>>>>>>>>>>>> {}", str);
-                googleStorageUtil.imgDelete(str);
-            }
-            int deleteResult = imagesRepository.deleteByBoardIdAndPath(boardId, deletePath);
-        }
 
-        if(!parserList.isEmpty()) {
-            List<Image> imageList = new ArrayList<>();
-            for (ImageNameParser imageNameParser : parserList) {
-                if (googleStorageUtil.imgUpload(imageNameParser)) {
-                    Image image = imageNameParser.convertImage(boardId);
-                    imageList.add(image);
-                } else {
-                    throw new GcsUploadException();
-                }
-            }
-            imagesRepository.saveAll(imageList);
-        }
-        return result;
-    }
 
 }

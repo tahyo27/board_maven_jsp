@@ -67,7 +67,7 @@ public class BoardController {
         Document doc = Jsoup.parse(boardRequest.getContent());
         Elements images = doc.select("img");
 
-        if(!images.isEmpty()) {
+        if(!images.isEmpty()) { //todo write랑 겹쳐서 분리 필요
             for(Element image : images) {
                 String srcStr = image.attr("src");
                 ImageNameParser imageNameParser = new ImageNameParser(srcStr);
@@ -89,11 +89,43 @@ public class BoardController {
         return "redirect:/";
     }
 
-    @PatchMapping("/boards/{boardId}")
-    public String editBoard(@PathVariable(value = "boardId") Long boardId, @ModelAttribute BoardRequest boardRequest) {
+    @PostMapping("/boards/{boardId}/update") //todo 구조 어떻게 바꿀지 생각
+    public String editBoard(@PathVariable (value = "boardId") Long boardId, @ModelAttribute BoardRequest boardRequest) {
         blankValidation.isValid(boardRequest, "title", "content"); //todo 이미지 수정 때 어떻게 할지 고민 /image/temp 로 시작하는 것만 바꾸기
-        log.info(">>>>>>>>>>>>>>>>>>>>>> edit board = {}", boardRequest);
-        int result = boardService.edit(boardId, boardRequest);
+        boardRequest.setId(boardId);
+        log.info(">>>>>>>>>>>>>board edit {} ", boardRequest);
+        List<String> savedList = boardService.getImagePath(boardRequest.getId());
+        log.info(">>>>>>>>>>>>>>>>>>>>savedList {}", savedList);
+        //image에서 저장되어있는 gcspath 불러와서 비교후 지워야 하는거 필터링 해아할듯
+        Document doc = Jsoup.parse(boardRequest.getContent());
+        Elements images = doc.select("img");
+
+        List<ImageNameParser> imageList = new ArrayList<>(); //todo 이미지 없을때 처리 생각
+        List<String> existList = new ArrayList<>();
+        if(!images.isEmpty()) {
+            for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
+                String srcStr = image.attr("src");
+                if(srcStr.contains("/temp/image/")) {
+                    log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
+                    ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+                    imageList.add(imageNameParser);
+                    image.attr("src", imageNameParser.getGcsPath());
+                } else {
+                    existList.add(srcStr);
+                }
+            }
+        }
+        List<String> deletePath = savedList.stream()
+                .filter(item -> !existList.contains(item)).toList();
+
+        //넘겨서 지우고 추가
+
+        log.info(">>>>>>>>>>>>>>>>>>>>>> deletePath {}", deletePath);
+
+        String updatedContent = doc.body().html();
+        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
+        boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
+        boardService.edit(boardRequest, imageList, deletePath);
 
         return "redirect:/";
     }
@@ -166,7 +198,7 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/updatetest")
+    @GetMapping("/mytest")
     public String updatetest(Model model) {
         BoardResponse board = boardService.get(20028L);
         log.info("board >>>>>>>>>>>> {}", board);
@@ -174,46 +206,7 @@ public class BoardController {
         model.addAttribute("board", board);
         return "update";
     }
-    @PostMapping("/edittest")
-    public String edittest(@ModelAttribute BoardRequest boardRequest) {
-        log.info(">>>>>>>>>>>>>board edit {} ", boardRequest);
 
-        List<String> savedList = boardService.getImagePath(boardRequest.getId());
-        log.info(">>>>>>>>>>>>>>>>>>>>savedList {}", savedList);
-        //image에서 저장되어있는 gcspath 불러와서 비교후 지워야 하는거 필터링 해아할듯
-        Document doc = Jsoup.parse(boardRequest.getContent());
-        Elements images = doc.select("img");
-
-        List<ImageNameParser> imageList = new ArrayList<>(); //todo 이미지 없을때 처리 생각
-        List<String> existList = new ArrayList<>();
-        if(!images.isEmpty()) {
-            for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
-                String srcStr = image.attr("src");
-                if(srcStr.contains("/temp/image/")) {
-                    log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
-                    ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-                    imageList.add(imageNameParser);
-                    image.attr("src", imageNameParser.getGcsPath());
-                } else {
-                    existList.add(srcStr);
-                }
-            }
-        }
-        List<String> deletePath = savedList.stream()
-                .filter(item -> !existList.contains(item)).toList();
-        
-        //넘겨서 지우고 추가
-
-        log.info(">>>>>>>>>>>>>>>>>>>>>> deletePath {}", deletePath);
-
-        String updatedContent = doc.body().html();
-        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
-        boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
-        boardService.edittest(boardRequest, imageList, deletePath);
-        // existList와
-
-        return "";
-    }
 
 //    private MediaType getMediaTypeForFileName(String fileName) {
 //        if (fileName.endsWith(".png")) {

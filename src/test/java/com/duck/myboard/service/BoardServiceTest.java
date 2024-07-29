@@ -107,11 +107,13 @@ class BoardServiceTest {
         Long boardId = testObj();
 
         BoardRequest boardEdit = BoardRequest.builder()
+                .id(boardId)
                 .title("변경제목")
                 .content("변경내용")
                 .build();
-
-        int updateResult = boardService.edit(boardId, boardEdit);
+        List<ImageNameParser> imageNameParserList = new ArrayList<>();
+        List<String> deletepath = new ArrayList<>();
+        int updateResult = boardService.edit(boardEdit, imageNameParserList, deletepath);
 
         //when
         List<Board> boards = boardService.getPagingList();
