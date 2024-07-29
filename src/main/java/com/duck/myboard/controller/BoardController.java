@@ -1,6 +1,7 @@
 package com.duck.myboard.controller;
 
 import com.duck.myboard.common.ImageNameParser;
+import com.duck.myboard.common.ImageProcess;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.exception.BlankException;
 import com.duck.myboard.exception.BoardSaveException;
@@ -63,24 +64,25 @@ public class BoardController {
         blankValidation.isValid(boardRequest, "title", "content", "author");
         log.info("board Reqeust >>>>>>>>>>>>>>>>>>>>>> {}", boardRequest.getContent());
 
-        List<ImageNameParser> imageList = new ArrayList<>();
-        Document doc = Jsoup.parse(boardRequest.getContent());
-        Elements images = doc.select("img");
+        ImageProcess imageProcess = new ImageProcess(boardRequest.getContent());
+//        List<ImageNameParser> imageList = new ArrayList<>();
+//        Document doc = Jsoup.parse(boardRequest.getContent());
+//        Elements images = doc.select("img");
+//
+//        if(!images.isEmpty()) {
+//            for(Element image : images) {
+//                String srcStr = image.attr("src");
+//                ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+//                imageList.add(imageNameParser);
+//                image.attr("src", imageNameParser.getGcsPath());
+//            }
+//        }
+//
+//        String updatedContent = doc.body().html();
+//        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
+        boardRequest.setContent(imageProcess.getContent()); //이미지 주소 바꿔서 세팅
 
-        if(!images.isEmpty()) { //todo write랑 겹쳐서 분리 필요
-            for(Element image : images) {
-                String srcStr = image.attr("src");
-                ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-                imageList.add(imageNameParser);
-                image.attr("src", imageNameParser.getGcsPath());
-            }
-        }
-
-        String updatedContent = doc.body().html();
-        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
-        boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
-
-        Long boardId = boardService.write(boardRequest, imageList);
+        Long boardId = boardService.write(boardRequest, imageProcess.getImageList());
 
         if(boardId == null) {
             throw new BoardSaveException();
@@ -105,16 +107,17 @@ public class BoardController {
         if(!images.isEmpty()) {
             for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
                 String srcStr = image.attr("src");
-                if(srcStr.contains("/temp/image/")) {
+                if(srcStr.startsWith("/temp/image")) {
                     log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
                     ImageNameParser imageNameParser = new ImageNameParser(srcStr);
                     imageList.add(imageNameParser);
                     image.attr("src", imageNameParser.getGcsPath());
-                } else {
+                } else if(srcStr.startsWith("https://storage.googleapis.com/imgtest_bucket")) {
                     existList.add(srcStr);
                 }
             }
         }
+
         List<String> deletePath = savedList.stream()
                 .filter(item -> !existList.contains(item)).toList();
 
@@ -176,7 +179,6 @@ public class BoardController {
             return ResponseEntity.ok().body(Map.of("url", imageUrl));
             
         } catch (IOException e) {
-            log.info(">>>>>>>>>>>>>>>>>> image/temp controller : {}", e.getMessage());
             return ResponseEntity.status(500).body("이미지 업로드 실패");
         }
 
@@ -205,6 +207,30 @@ public class BoardController {
 
         model.addAttribute("board", board);
         return "update";
+    }
+
+    private String imageProcess(String content) {
+        Document doc = Jsoup.parse(content);
+        Elements images = doc.select("img");
+
+        List<ImageNameParser> imageList = new ArrayList<>(); //todo 이미지 없을때 처리 생각
+        List<String> existList = new ArrayList<>();
+
+        if(!images.isEmpty()) {
+            for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
+                String srcStr = image.attr("src");
+                if(srcStr.startsWith("/temp/image")) {
+                    log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
+                    ImageNameParser imageNameParser = new ImageNameParser(srcStr);
+                    imageList.add(imageNameParser);
+                    image.attr("src", imageNameParser.getGcsPath());
+                } else if(srcStr.startsWith("https://storage.googleapis.com/imgtest_bucket")) {
+                    existList.add(srcStr);
+                }
+            }
+        }
+
+        return "";
     }
 
 
