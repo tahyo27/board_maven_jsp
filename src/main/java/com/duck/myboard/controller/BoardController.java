@@ -64,23 +64,8 @@ public class BoardController {
         blankValidation.isValid(boardRequest, "title", "content", "author");
         log.info("board Reqeust >>>>>>>>>>>>>>>>>>>>>> {}", boardRequest.getContent());
 
-        ImageProcess imageProcess = new ImageProcess(boardRequest.getContent());
-//        List<ImageNameParser> imageList = new ArrayList<>();
-//        Document doc = Jsoup.parse(boardRequest.getContent());
-//        Elements images = doc.select("img");
-//
-//        if(!images.isEmpty()) {
-//            for(Element image : images) {
-//                String srcStr = image.attr("src");
-//                ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-//                imageList.add(imageNameParser);
-//                image.attr("src", imageNameParser.getGcsPath());
-//            }
-//        }
-//
-//        String updatedContent = doc.body().html();
-//        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
-        boardRequest.setContent(imageProcess.getContent()); //이미지 주소 바꿔서 세팅
+        ImageProcess imageProcess = new ImageProcess(boardRequest.getContent()); //이미지 처리
+        boardRequest.setContent(imageProcess.getContent()); 
 
         Long boardId = boardService.write(boardRequest, imageProcess.getImageList());
 
@@ -93,47 +78,18 @@ public class BoardController {
 
     @PostMapping("/boards/{boardId}/update") //todo 구조 어떻게 바꿀지 생각
     public String editBoard(@PathVariable (value = "boardId") Long boardId, @ModelAttribute BoardRequest boardRequest) {
-        blankValidation.isValid(boardRequest, "title", "content"); //todo 이미지 수정 때 어떻게 할지 고민 /image/temp 로 시작하는 것만 바꾸기
+        blankValidation.isValid(boardRequest, "title", "content");
         boardRequest.setId(boardId);
-        log.info(">>>>>>>>>>>>>board edit {} ", boardRequest);
         List<String> savedList = boardService.getImagePath(boardRequest.getId());
-        log.info(">>>>>>>>>>>>>>>>>>>>savedList {}", savedList);
-        //image에서 저장되어있는 gcspath 불러와서 비교후 지워야 하는거 필터링 해아할듯
-        Document doc = Jsoup.parse(boardRequest.getContent());
-        Elements images = doc.select("img");
+        ImageProcess imageProcess = new ImageProcess(boardRequest.getContent(), savedList); //이미지 처리
+        boardRequest.setContent(imageProcess.getContent()); //이미지 처리 후 내용에 셋
 
-        List<ImageNameParser> imageList = new ArrayList<>(); //todo 이미지 없을때 처리 생각
-        List<String> existList = new ArrayList<>();
-        if(!images.isEmpty()) {
-            for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
-                String srcStr = image.attr("src");
-                if(srcStr.startsWith("/temp/image")) {
-                    log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
-                    ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-                    imageList.add(imageNameParser);
-                    image.attr("src", imageNameParser.getGcsPath());
-                } else if(srcStr.startsWith("https://storage.googleapis.com/imgtest_bucket")) {
-                    existList.add(srcStr);
-                }
-            }
-        }
-
-        List<String> deletePath = savedList.stream()
-                .filter(item -> !existList.contains(item)).toList();
-
-        //넘겨서 지우고 추가
-
-        log.info(">>>>>>>>>>>>>>>>>>>>>> deletePath {}", deletePath);
-
-        String updatedContent = doc.body().html();
-        log.info("board Reqeust changed >>>>>>>>>>>>>>>>>>>>>> {}", updatedContent);
-        boardRequest.setContent(updatedContent); //이미지 주소 바꿔서 세팅
-        boardService.edit(boardRequest, imageList, deletePath);
+        boardService.edit(boardRequest, imageProcess.getImageList(), imageProcess.getDeletePath());
 
         return "redirect:/";
     }
 
-    @DeleteMapping("/boards/{boardId}")
+    @DeleteMapping("/boards/{boardId}/delete")
     public String deleteBoard(@PathVariable(value = "boardId") Long boardId) {
         int result = boardService.delete(boardId);
 
@@ -209,29 +165,6 @@ public class BoardController {
         return "update";
     }
 
-    private String imageProcess(String content) {
-        Document doc = Jsoup.parse(content);
-        Elements images = doc.select("img");
-
-        List<ImageNameParser> imageList = new ArrayList<>(); //todo 이미지 없을때 처리 생각
-        List<String> existList = new ArrayList<>();
-
-        if(!images.isEmpty()) {
-            for(Element image : images) { //todo write랑 중복되는 부분 나중에 묶을 생각
-                String srcStr = image.attr("src");
-                if(srcStr.startsWith("/temp/image")) {
-                    log.info(">>>>>>>>>> contains >>>>>>>>> srcStr : {}", srcStr);
-                    ImageNameParser imageNameParser = new ImageNameParser(srcStr);
-                    imageList.add(imageNameParser);
-                    image.attr("src", imageNameParser.getGcsPath());
-                } else if(srcStr.startsWith("https://storage.googleapis.com/imgtest_bucket")) {
-                    existList.add(srcStr);
-                }
-            }
-        }
-
-        return "";
-    }
 
 
 //    private MediaType getMediaTypeForFileName(String fileName) {

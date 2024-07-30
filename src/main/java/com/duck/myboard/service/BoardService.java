@@ -42,17 +42,9 @@ public class BoardService {
         Long boardId = board.getId();
 
         if(!parserList.isEmpty()) {
-            List<Image> imageList = new ArrayList<>();
-            for (ImageNameParser imageNameParser : parserList) {
-                if (googleStorageUtil.imgUpload(imageNameParser)) {
-                    Image image = imageNameParser.convertImage(boardId);
-                    imageList.add(image);
-                } else {
-                    throw new GcsUploadException();
-                }
-            }
-            imagesRepository.saveAll(imageList);
+            uploadImage(parserList, boardId);
         }
+
         return boardId;
     }
 
@@ -63,25 +55,13 @@ public class BoardService {
         Long boardId = board.getId();
         int result = boardRepository.update(board);
         log.info(">>>>>>>>>>>>>>>>>>>>>>> service deletePath {}", deletePath);
-        if(!deletePath.isEmpty()) { //클라우드 삭제
-            for(String str : deletePath) {
-                log.info("str >>>>>>>>>>>>> {}", str);
-                googleStorageUtil.imgDelete(str);
-            }
-            imagesRepository.deleteByBoardIdAndPath(boardId, deletePath);
-        }
 
-        if(!parserList.isEmpty()) { //todo write랑 붕복되는 부분
-            List<Image> imageList = new ArrayList<>();
-            for (ImageNameParser imageNameParser : parserList) {
-                if (googleStorageUtil.imgUpload(imageNameParser)) {
-                    Image image = imageNameParser.convertImage(boardId);
-                    imageList.add(image);
-                } else {
-                    throw new GcsUploadException();
-                }
-            }
-            imagesRepository.saveAll(imageList);
+        if(!deletePath.isEmpty()) { //삭제해야할 부분 삭제
+           deleteImages(deletePath, boardId);
+        }
+        
+        if(!parserList.isEmpty()) { //업로드 해야될 부분 업로드
+            uploadImage(parserList, boardId);
         }
         return result;
     }
@@ -99,6 +79,24 @@ public class BoardService {
         return imagesRepository.pathFindByBoardId(boardId);
     }
 
+    private void uploadImage(List<ImageNameParser> parserList, Long boardId) {
+        List<Image> imageList = new ArrayList<>();
+        for (ImageNameParser imageNameParser : parserList) {
+            if (googleStorageUtil.imgUpload(imageNameParser)) {
+                Image image = imageNameParser.convertImage(boardId);
+                imageList.add(image);
+            } else {
+                throw new GcsUploadException();
+            }
+        }
+        imagesRepository.saveAll(imageList);
+    }
 
+    private void deleteImages(List<String> deletePath, Long boardId) {
+        for (String str : deletePath) {
+            googleStorageUtil.imgDelete(str);
+        }
+        imagesRepository.deleteByBoardIdAndPath(boardId, deletePath);
+    }
 
 }
