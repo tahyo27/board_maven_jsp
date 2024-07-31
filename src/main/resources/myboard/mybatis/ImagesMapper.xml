@@ -30,5 +30,10 @@
         </foreach>
     </delete>
 
+    <delete id="deleteByBoardId">
+        DELETE FROM images
+        WHERE board_id = ${boardId}
+    </delete>
+
 
 </mapper>

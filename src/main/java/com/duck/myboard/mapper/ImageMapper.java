@@ -12,4 +12,6 @@ public interface ImageMapper {
     List<String> pathFindByBoardId(Long boardId);
 
     int deleteByBoardIdAndPath(Long boardId, List<String> deletePath);
+
+    int deleteByBoardId(Long boardId);
 }

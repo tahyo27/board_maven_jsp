@@ -32,4 +32,8 @@ public class ImagesRepository {
     public int deleteByBoardIdAndPath(Long boardId, List<String> deletePath) {
         return imageMapper.deleteByBoardIdAndPath(boardId, deletePath);
     }
+
+    public int deleteByBoardId(Long boardId) {
+        return imageMapper.deleteByBoardId(boardId);
+    }
 }

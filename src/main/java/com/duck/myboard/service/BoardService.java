@@ -66,8 +66,11 @@ public class BoardService {
         return result;
     }
 
+    @Transactional
     public int delete(Long boardId) {
-        return boardRepository.deleteById(boardId);
+        int result = boardRepository.deleteById(boardId);
+        imagesRepository.deleteByBoardId(boardId);
+        return result;
     }
 
     public BoardResponse get(Long boardId) {
@@ -92,7 +95,7 @@ public class BoardService {
         imagesRepository.saveAll(imageList);
     }
 
-    private void deleteImages(List<String> deletePath, Long boardId) {
+    private void deleteImages(List<String> deletePath, Long boardId) { //todo 예외처리
         for (String str : deletePath) {
             googleStorageUtil.imgDelete(str);
         }
