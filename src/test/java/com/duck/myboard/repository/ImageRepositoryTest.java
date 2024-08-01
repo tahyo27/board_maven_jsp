@@ -79,6 +79,27 @@ class ImageRepositoryTest {
         Assertions.assertTrue(imageList.isEmpty());
     }
 
+    @Test
+    @DisplayName("이미지 매퍼 boardId 삭제 테스트")
+    void delete_with_boardId_test() {
+        //gvien
+        Image images = Image.builder()
+                .imagePath("asd")
+                .originName("asdf")
+                .uniqueName("dfasdf")
+                .boardId(430L)
+                .build();
+        //when
+        imageMapper.save(images);
+
+        int result = imageMapper.deleteByBoardId(430L);
+
+        //then
+        Assertions.assertTrue(result > 0);
+
+
+    }
+
 
 
 

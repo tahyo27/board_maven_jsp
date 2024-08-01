@@ -1,6 +1,9 @@
 package com.duck.myboard.controller;
 
+import com.duck.myboard.common.GoogleStorageUtil;
+import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.domain.Board;
+import com.duck.myboard.exception.GcsUploadException;
 import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.request.BoardRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -12,15 +15,24 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -36,6 +48,9 @@ class BoardControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private BoardMapper boardMapper;
+
+    @Autowired
+    private GoogleStorageUtil googleStorageUtil;
 
     @Test
     @DisplayName("controller 페이징 리스트 출력")
@@ -201,6 +216,155 @@ class BoardControllerTest {
                 .andDo(MockMvcResultHandlers.print());
 
     }
+
+    @Test
+    @DisplayName("테스트 이미지 템프 성공")
+    void image_temp_test_success() throws Exception {
+        // Given
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                "test-image.png",
+                "image/png",
+                "dummy image content".getBytes()
+        );
+
+        // When & Then
+        mockMvc.perform(multipart("/image/temp").file(mockFile))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url").exists());
+    }
+
+    @Test
+    @DisplayName("이미지 temp 업로드한 이미지가 없을때")
+    void image_temp_teest_empty() throws Exception {
+        // Given
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                "",
+                "image/png",
+                new byte[0]
+        );
+
+        // When & Then
+        mockMvc.perform(multipart("/image/temp").file(mockFile))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("파일이 업로드되지 않았습니다")));
+    }
+
+    @Test
+    @DisplayName("파일 이름이 null일때")
+    void image_temp_test_name_null() throws Exception {
+        // Given
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                null,
+                "image/png",
+                "dummy image content".getBytes()
+        );
+
+        // When & Then
+        mockMvc.perform(multipart("/image/temp").file(mockFile))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("파일의 이름이 잘못되었습니다")));
+    }
+
+    @Test
+    @DisplayName("파일 이름이 공백일때")
+    void image_temp_test_name_empty() throws Exception {
+        // Given
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                "",
+                "image/png",
+                "dummy image content".getBytes()
+        );
+
+        // When & Then
+        mockMvc.perform(multipart("/image/temp").file(mockFile))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("파일의 이름이 잘못되었습니다")));
+    }
+
+    @Test
+    @DisplayName("구글 스토리지 업로드 성공 테스트")
+    void gcs_upload_test() throws IOException {
+        //given
+        Path tempDirPath = Path.of("./temp/image");
+        BufferedImage bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+        g2d.setColor(Color.BLUE);
+        g2d.fillRect(0, 0, 200, 200);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("Dummy Image", 50, 100);
+        g2d.dispose();
+        String uuidName = UUID.randomUUID().toString();
+        String name = uuidName + "_dummyimage.png";
+
+        //when
+        File imageFile = new File(tempDirPath.toFile(), name);
+        ImageIO.write(bufferedImage, "png", imageFile);
+
+        ImageNameParser imageNameParser = new ImageNameParser("/temp/image/" + name);
+        log.info("ImageName parser>>>>>>>>> {}", imageNameParser);
+        boolean result = googleStorageUtil.imgUpload(imageNameParser);
+
+        //then
+        Assertions.assertTrue(result);
+
+    }
+
+    @Test
+    @DisplayName("구글 스토리지 업로드 null 테스트")
+    void gcs_upload_fail_test() throws IOException {
+
+        //expected
+        Assertions.assertThrows(GcsUploadException.class, () -> googleStorageUtil.imgUpload(null));
+
+    }
+
+    @Test
+    @DisplayName("구글 스토리지 업로드 삭제 테스트")
+    void gcs_upload_delete_test() throws IOException {
+        //given
+        Path tempDirPath = Path.of("./temp/image");
+
+        BufferedImage bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+        g2d.setColor(Color.BLUE);
+        g2d.fillRect(0, 0, 200, 200);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("Dummy Image", 50, 100);
+        g2d.dispose();
+        String uuidName = UUID.randomUUID().toString();
+        String name = uuidName + "_dummyimage.png";
+        File imageFile = new File(tempDirPath.toFile(), name);
+        ImageIO.write(bufferedImage, "png", imageFile);
+
+        ImageNameParser imageNameParser = new ImageNameParser("/temp/image/" + name);
+        String gcsPath = imageNameParser.getGcsPath();
+        googleStorageUtil.imgUpload(imageNameParser);
+        //when
+        boolean result = googleStorageUtil.imgDelete(gcsPath);
+
+        //then
+        Assertions.assertTrue(result);
+
+    }
+
+    @Test
+    @DisplayName("구글 스토리지 업로드 삭제 실패 테스트")
+    void gcs_upload_delete_fail_test() throws IOException {
+        //given
+        String gcsPath = null;
+        //when
+        boolean result = googleStorageUtil.imgDelete(gcsPath);
+
+        //then
+        Assertions.assertFalse(result);
+
+    }
+
+
 
 
 

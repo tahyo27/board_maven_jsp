@@ -114,7 +114,7 @@ public class BoardController {
     public ResponseEntity<?> imageTemp(MultipartFile file) { //에디터 이미지 임시저장
         if(file.isEmpty()) {
             return ResponseEntity.badRequest().body("파일이 업로드되지 않았습니다");
-        } else if (file.getOriginalFilename() == null) {
+        } else if (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
             return ResponseEntity.badRequest().body("파일의 이름이 잘못되었습니다");
         }
 

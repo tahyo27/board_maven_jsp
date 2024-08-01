@@ -29,9 +29,12 @@ public class GoogleStorageUtil {
     private final Storage storage;
 
     public boolean imgUpload(ImageNameParser imageNameParser) {
+        if(imageNameParser == null) {
+            throw new GcsUploadException();
+        }
         //임시 저장 이미지 경로
         Path tempFilePath = Paths.get("./temp/image").resolve(imageNameParser.getTempName());
-
+        log.info(">>>>>>>>>>>>>> 이미지 들어옴 : {}", tempFilePath);
         try {
             byte[] imageFile = Files.readAllBytes(tempFilePath);
 
@@ -50,13 +53,15 @@ public class GoogleStorageUtil {
         }
     }
 
-    public void imgDelete(String path) {
-        log.info(">>>>>>>>>>>>>> path {}", path);
+    public boolean imgDelete(String path) {
+        if(path == null) {
+            return false;
+        }
         String imgName = path.replace(GCS_URI_PREFIX + bucketName + "/", ""); //todo 유니크이름 도 가져와야할듯
-        log.info(">>>>>>>>>>>>>> imgName {}", imgName);
         Blob blob = storage.get(bucketName, imgName);
         if (blob == null) {
-            return; //todo 파일 찾을 수 없다고 throw는 필요없을듯 처리 생각 로그만 남기는게 괜찮을듯 나중에 로그 보고 지우면 되니까
+            log.info(">>>>>>>>> 해당 이미지 파일 스토리지에 없음 {}", imgName);
+            return false;
         }
         BlobId idWithGeneration = blob.getBlobId();
         log.info(">>>>>>>>>>>>>>>>>>>>>> idWithGeneration {}", idWithGeneration);
@@ -68,6 +73,8 @@ public class GoogleStorageUtil {
         } else {
             log.warn(bucketName + "에서"  + path + "의 삭제가 실패했습니다" );
         }
+
+        return deleted;
     }
 
     private static String getContentType(ImageNameParser imageNameParser) {
