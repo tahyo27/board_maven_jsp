@@ -1,26 +1,66 @@
-main {
-    width: 80%;
-    margin: 0 auto;
-}
+ body {
+        background-color: #f5f5f5;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
 
-.select-title{
-    font-size: 1.2rem;
-    font-weight: bold;
-}
+    main {
+        width: 80%;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
 
-.select-detail-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid black;
-}
+    .select-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
 
-.left-group {
-    display: flex;
-}
+    .select-detail-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
 
-.select-content-container {
-    margin-top: 50px;
-    border: 1px solid black;
-}
+    .left-group {
+        display: flex;
+        gap: 20px;
+    }
 
+    .left-group div, .right-group div {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .right-group {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .select-content-container {
+        margin-top: 20px;
+    }
+
+    .content {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #34495e;
+    }
+
+    .author, .created-at, .view-count {
+        padding: 5px 10px;
+        background-color: #ecf0f1;
+        border-radius: 5px;
+    }
+
+    .author {
+        margin-right: 10px;
+    }
