@@ -4,12 +4,12 @@
 
 <mapper namespace="com.duck.myboard.mapper.UserMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO USER (name, email, password)
+        INSERT INTO user (name, email, password)
         VALUES (#{name}, #{email}, #{password})
     </insert>
 
     <select id="findAll" resultType="com.duck.myboard.domain.User">
-        SELECT * FROM USER
+        SELECT * FROM user
     </select>
 </mapper>
 
