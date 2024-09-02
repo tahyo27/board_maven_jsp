@@ -2,6 +2,7 @@ package com.duck.myboard.controller;
 
 import com.duck.myboard.common.ImageNameParser;
 import com.duck.myboard.common.ImageProcess;
+import com.duck.myboard.common.ResponseEntityUtil;
 import com.duck.myboard.domain.Board;
 import com.duck.myboard.exception.BlankException;
 import com.duck.myboard.exception.BoardSaveException;
@@ -113,9 +114,9 @@ public class BoardController {
     @PostMapping("/image/temp")  
     public ResponseEntity<?> imageTemp(MultipartFile file) { //에디터 이미지 임시저장
         if(file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 업로드되지 않았습니다");
+            return ResponseEntityUtil.empty("파일");
         } else if (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
-            return ResponseEntity.badRequest().body("파일의 이름이 잘못되었습니다");
+            return ResponseEntityUtil.empty("파일");
         }
 
         Path tempDirPath = Path.of("./temp/image");
@@ -135,7 +136,7 @@ public class BoardController {
             return ResponseEntity.ok().body(Map.of("url", imageUrl));
             
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("이미지 업로드 실패");
+            return ResponseEntityUtil.uploadFail();
         }
 
     }

@@ -30,30 +30,6 @@
           </div>
 
 
-
-          <!--
-          <form action="/boards" method="post" enctype="multipart/form-data">
-              <label for="title">Title:</label>
-              <input type="text" id="title" name="title" required>
-              <br><br>
-
-              <label for="content">Content:</label>
-              <textarea id="content" name="content" rows="4" cols="50" required></textarea>
-              <br><br>
-
-              <label for="author">Author:</label>
-              <input type="text" id="author" name="author" required>
-              <br><br>
-
-              <label for="file">Choose an image to upload:</label>
-              <input type="file" id="file" name="images" accept="image/*" multiple>
-              <br><br>
-
-              <button type="submit">Upload Image</button>
-          </form>
-          -->
-
-
     </div>
     </main>
 
