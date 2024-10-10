@@ -8,7 +8,7 @@
         VALUES (#{author}, #{content}, #{boardId}, #{parentId})
     </insert>
 
-    <select id="findByBoardId" resultType="com.duck.myboard.domain.User">
+    <select id="findByBoardId" resultType="com.duck.myboard.domain.Comments">
         SELECT * FROM comments WHERE board_id = #{boardId}
     </select>
 </mapper>

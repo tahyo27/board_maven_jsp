@@ -18,13 +18,15 @@
                 <div>조회수</div>
      </div>
             <c:forEach var="board" items="${boardList}">
-                <div class="board-item">
-                    <div class="board-id">${board.id}</div>
-                    <div class="board-title">${board.title}</div>
-                    <div class="board-author">${board.author}</div>
-                    <div class="board-created-at">${board.createAt}</div>
-                    <div class="board-count">${board.count}</div>
-                </div>
+                <a href="/boards/${board.id}">
+                    <div class="board-item">
+                        <div class="board-id">${board.id}</div>
+                        <div class="board-title">${board.title}</div>
+                        <div class="board-author">${board.author}</div>
+                        <div class="board-created-at">${board.createAt}</div>
+                        <div class="board-count">${board.count}</div>
+                    </div>
+                </a>
             </c:forEach>
     </main>
 </body>

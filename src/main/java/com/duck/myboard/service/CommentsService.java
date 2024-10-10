@@ -1,5 +1,6 @@
 package com.duck.myboard.service;
 
+import com.duck.myboard.domain.Comments;
 import com.duck.myboard.repository.CommentsRepository;
 import com.duck.myboard.request.CommentsRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,18 @@ public class CommentsService {
 
     private final CommentsRepository commentsRepository;
 
-    public Long write(CommentsRequest commentsRequest) {
-
-        return 1L;
+    void write(CommentsRequest commentsRequest) {
+        Comments comments = Comments.builder()
+                .author("ㅁ")
+                .boardId(1L)
+                .content("df")
+                .parentId(2L)
+                .build();
+        commentsRepository.save(comments);
     }
+
+    void getList(Long boardId) {
+        commentsRepository.findById(1L);
+    }
+
 }
