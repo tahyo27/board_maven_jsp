@@ -5,6 +5,8 @@ import com.duck.myboard.mapper.CommentsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -16,7 +18,8 @@ public class CommentsRepository {
         commentsMapper.save(comments);
     }
 
-    public void findById(Long boardId) {
-        commentsMapper.findByBoardId(boardId);
+    public List<Comments> findById(Long boardId) {
+
+        return commentsMapper.findByBoardId(boardId);
     }
 }

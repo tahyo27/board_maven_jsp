@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -15,17 +17,15 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
 
     void write(CommentsRequest commentsRequest) {
-        Comments comments = Comments.builder()
-                .author("ㅁ")
-                .boardId(1L)
-                .content("df")
-                .parentId(2L)
-                .build();
+
+        Comments comments = CommentsRequest.createComments(commentsRequest);
+
         commentsRepository.save(comments);
     }
 
-    void getList(Long boardId) {
-        commentsRepository.findById(1L);
+    List<Comments> getList(Long boardId) {
+
+        return commentsRepository.findById(1L);
     }
 
 }
