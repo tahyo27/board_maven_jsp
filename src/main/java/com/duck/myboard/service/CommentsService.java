@@ -16,16 +16,16 @@ public class CommentsService {
 
     private final CommentsRepository commentsRepository;
 
-    void write(CommentsRequest commentsRequest) {
+    public List<Comments> getList() {
+        return commentsRepository.findById(1L);
+    }
 
-        Comments comments = CommentsRequest.createComments(commentsRequest);
+    public void write(Long boardId, CommentsRequest commentsRequest) {
+
+        Comments comments = CommentsRequest.createComments(boardId, commentsRequest);
 
         commentsRepository.save(comments);
     }
 
-    List<Comments> getList(Long boardId) {
-
-        return commentsRepository.findById(1L);
-    }
 
 }

@@ -1,23 +1,29 @@
 package com.duck.myboard.controller;
 
+import com.duck.myboard.domain.Comments;
 import com.duck.myboard.request.CommentsRequest;
 import com.duck.myboard.service.CommentsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentsService commentsService;
 
     @PostMapping("/boards/{boardId}/comments")
-    public void write(@PathVariable(value = "boardId") Long boardId, @ModelAttribute CommentsRequest commentsRequest) {
+    public void writeComments(@PathVariable(value = "boardId") Long boardId, @ModelAttribute CommentsRequest commentsRequest) {
 
+        commentsService.write(boardId, commentsRequest);
+    }
+
+    @GetMapping("/boards/{boardsId}/comments")
+    public List<Comments> getCommentsList(@PathVariable(value = "boardId") Long boardId) {
+        return commentsService.getList();
     }
 }

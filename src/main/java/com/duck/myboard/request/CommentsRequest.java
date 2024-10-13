@@ -11,23 +11,22 @@ import lombok.ToString;
 @ToString
 public class CommentsRequest {
     private Long id;
-    private Long boardId;
     private Long parentId; // 임시
     private String author;
     private String content;
 
 
     @Builder
-    public CommentsRequest(Long id, String author, String content, Long boardId) {
+    public CommentsRequest(Long id, String author, String content, Long parentId) {
         this.id = id;
-        this.boardId = boardId;
+        this.parentId = parentId;
         this.author = author;
         this.content = content;
     }
 
-    public static Comments createComments(CommentsRequest commentsRequest) {
+    public static Comments createComments(Long boardId, CommentsRequest commentsRequest) {
         return Comments.builder()
-                .boardId(commentsRequest.getBoardId())
+                .boardId(boardId)
                 .parentId(commentsRequest.getParentId())
                 .author(commentsRequest.getAuthor())
                 .content(commentsRequest.getContent())
