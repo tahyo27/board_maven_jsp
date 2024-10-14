@@ -17,8 +17,7 @@ public class CommentController {
     private final CommentsService commentsService;
 
     @PostMapping("/boards/{boardId}/comments")
-    public void writeComments(@PathVariable(value = "boardId") Long boardId, @ModelAttribute CommentsRequest commentsRequest) {
-
+    public void writeComments(@PathVariable(value = "boardId") Long boardId, @RequestBody CommentsRequest commentsRequest) {
         commentsService.write(boardId, commentsRequest);
     }
 

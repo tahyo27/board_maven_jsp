@@ -1,7 +1,10 @@
 package com.duck.myboard.controller;
 
 import com.duck.myboard.domain.Board;
+import com.duck.myboard.domain.Comments;
 import com.duck.myboard.mapper.BoardMapper;
+import com.duck.myboard.request.CommentsRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
@@ -30,6 +36,9 @@ class CommentControllerTest {
     @Autowired
     private BoardMapper boardMapper;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
     @DisplayName("controller 페이징 리스트 출력")
     void controller_paging_list() throws Exception {
@@ -42,6 +51,35 @@ class CommentControllerTest {
                 .andExpect(model().attributeExists("boardList"))
                 .andExpect(view().name("index"))
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("comments controller write 테스트")
+    void comments_controller_write_test() throws Exception {
+
+        //given
+        Long boardId = testObj();
+
+        CommentsRequest commentsRequest = CommentsRequest.builder()
+                .author("test123")
+                .content("test321")
+                .parentId(null)
+                .build();
+
+
+
+        String json = objectMapper.writeValueAsString(commentsRequest);
+
+        System.out.println(">>>>>>>>>>>>>>>>>" + json);
+
+        //expected
+        mockMvc.perform(post("/boards/{boardId}/comments", boardId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                        )
+                        .andExpect(status().isOk())
+                        .andDo(MockMvcResultHandlers.print());
+
     }
 
 
