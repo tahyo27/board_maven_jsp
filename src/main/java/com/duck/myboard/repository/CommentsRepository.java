@@ -18,7 +18,7 @@ public class CommentsRepository {
         commentsMapper.save(comments);
     }
 
-    public List<Comments> findById(Long boardId) {
+    public List<Comments> findByBoardId(Long boardId) {
 
         return commentsMapper.findByBoardId(boardId);
     }

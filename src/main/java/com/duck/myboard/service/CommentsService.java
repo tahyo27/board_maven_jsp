@@ -16,8 +16,8 @@ public class CommentsService {
 
     private final CommentsRepository commentsRepository;
 
-    public List<Comments> getList() {
-        return commentsRepository.findById(1L);
+    public List<Comments> getList(Long boardId) {
+        return commentsRepository.findByBoardId(boardId);
     }
 
     public void write(Long boardId, CommentsRequest commentsRequest) {

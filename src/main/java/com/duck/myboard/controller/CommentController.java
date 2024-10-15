@@ -21,8 +21,8 @@ public class CommentController {
         commentsService.write(boardId, commentsRequest);
     }
 
-    @GetMapping("/boards/{boardsId}/comments")
+    @GetMapping("/boards/{boardId}/comments")
     public List<Comments> getCommentsList(@PathVariable(value = "boardId") Long boardId) {
-        return commentsService.getList();
+        return commentsService.getList(boardId);
     }
 }

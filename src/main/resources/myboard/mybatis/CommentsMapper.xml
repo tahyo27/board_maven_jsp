@@ -3,13 +3,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.duck.myboard.mapper.CommentsMapper">
+
+    <select id="findByBoardId" resultType="com.duck.myboard.domain.Comments">
+        SELECT id, author, content, create_at, board_id, parent_id
+        FROM comments
+        WHERE board_id = #{boardId}
+    </select>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO comments (author, content, board_id, parent_id)
         VALUES (#{author}, #{content}, #{boardId}, #{parentId})
     </insert>
 
-    <select id="findByBoardId" resultType="com.duck.myboard.domain.Comments">
-        SELECT * FROM comments WHERE board_id = #{boardId}
-    </select>
+
+
 </mapper>
 

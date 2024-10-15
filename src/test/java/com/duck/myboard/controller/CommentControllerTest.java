@@ -6,6 +6,7 @@ import com.duck.myboard.mapper.BoardMapper;
 import com.duck.myboard.request.CommentsRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +41,19 @@ class CommentControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("controller 페이징 리스트 출력")
+    @Transactional
+    @DisplayName("controller 리스트 출력")
     void controller_paging_list() throws Exception {
-        Long boardId = testObj();
+
+        //given
+        Long boardId = 1668L;
 
         //expected
         mockMvc.perform(get("/boards/{boardId}/comments", boardId)
+                        .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("boardList"))
-                .andExpect(view().name("index"))
+                .andExpect(jsonPath("$[0].author", Matchers.is("test123")))
                 .andDo(MockMvcResultHandlers.print());
     }
 

@@ -2,6 +2,7 @@ package com.duck.myboard.mapper;
 
 import com.duck.myboard.domain.Comments;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
